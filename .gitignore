@@ -1,0 +1,13 @@
+*.log
+hs_err_pid*
+
+.gradle/
+**/build/
+!src/**/build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+
+out/
+.idea/
+
