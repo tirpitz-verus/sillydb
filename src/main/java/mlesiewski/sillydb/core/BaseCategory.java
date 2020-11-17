@@ -4,6 +4,7 @@ import io.reactivex.rxjava3.core.*;
 import mlesiewski.sillydb.*;
 
 import java.util.*;
+import java.util.concurrent.*;
 
 class BaseCategory implements Category {
 
@@ -14,7 +15,7 @@ class BaseCategory implements Category {
     BaseCategory(CategoryName name, SillyDb db) {
         this.name = name;
         this.db = db;
-        things = new HashMap<>();
+        things = new ConcurrentHashMap<>();
     }
 
     @Override
