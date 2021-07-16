@@ -20,11 +20,10 @@ abstract class Name {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof CategoryName)) {
+        if (!(o instanceof Name that)) {
             return false;
         }
-        var that = (CategoryName) o;
-        return Objects.equals(value, that.value);
+        return Objects.equals(this.getClass(), that.getClass()) && Objects.equals(value, that.value);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package mlesiewski.sillydb;
 
 import static java.util.Objects.requireNonNull;
+import static mlesiewski.sillydb.CategoryNameValidator.returnValidNameOrThrow;
 
 public final class CategoryName extends Name {
 
@@ -9,7 +10,11 @@ public final class CategoryName extends Name {
     }
 
     public CategoryName(String name) {
-        super(requireNonNull(name, "category name cannot be null"));
+        super(
+                returnValidNameOrThrow(
+                    requireNonNull(name, "category name cannot be null")
+                )
+        );
     }
 
 }

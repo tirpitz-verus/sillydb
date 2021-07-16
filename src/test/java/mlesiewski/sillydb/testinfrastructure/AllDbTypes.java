@@ -1,5 +1,6 @@
-package mlesiewski.sillydb;
+package mlesiewski.sillydb.testinfrastructure;
 
+import mlesiewski.sillydb.*;
 import org.junit.jupiter.api.extension.*;
 import org.junit.jupiter.params.provider.*;
 
@@ -30,7 +31,7 @@ public class AllDbTypes implements ArgumentsProvider {
     }
 
     @Override
-    public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+    public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
         return Stream.of(inMemoryDb, fileDb).map(Arguments::of);
     }
 }

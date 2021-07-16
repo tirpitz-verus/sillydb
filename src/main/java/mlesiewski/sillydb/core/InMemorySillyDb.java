@@ -11,32 +11,33 @@ import static org.slf4j.LoggerFactory.*;
 public class InMemorySillyDb implements SillyDb {
 
     protected final Logger logger;
-    protected final HashMap<CategoryName, Category> collections;
+    protected final HashMap<CategoryName, Category> categories;
 
     public InMemorySillyDb() {
         logger = getLogger(this.getClass());
-        collections = new HashMap<>();
+        categories = new HashMap<>();
 
         logger.info("sillydb created");
     }
 
     @Override
     public Single<Category> createCategory(CategoryName name) {
-        if (collections.containsKey(name)) {
-            logger.debug("collection {} already exists", name);
-            return Single.error(new CannotCreateCategory(name));
+        if (categories.containsKey(name)) {
+            logger.debug("category {} already exists", name);
+            var throwable = new CannotCreateCategory(name);
+            return Single.error(throwable);
         } else {
-            var collection = new BaseCategory(name, this);
-            collections.put(name, collection);
-            logger.debug("collection {} created", name);
-            return Single.just(collection);
+            var category = new InMemoryCategory(name, this);
+            categories.put(name, category);
+            logger.debug("category {} created", name);
+            return Single.just(category);
         }
     }
 
     @Override
     public Maybe<Category> findCategory(CategoryName name) {
-        if (collections.containsKey(name)) {
-            var collection = collections.get(name);
+        if (categories.containsKey(name)) {
+            var collection = categories.get(name);
             return Maybe.just(collection);
         } else {
             return Maybe.empty();
@@ -45,11 +46,12 @@ public class InMemorySillyDb implements SillyDb {
 
     @Override
     public Completable deleteCategory(CategoryName name) {
-        if (collections.containsKey(name)) {
-            collections.remove(name);
+        if (categories.containsKey(name)) {
+            categories.remove(name);
             return Completable.complete();
         } else {
-            return Completable.error(new CategoryDoesNotExist(name));
+            var throwable = new CategoryDoesNotExist(name);
+            return Completable.error(throwable);
         }
     }
 

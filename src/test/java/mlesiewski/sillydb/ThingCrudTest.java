@@ -1,29 +1,32 @@
 package mlesiewski.sillydb;
 
+import io.reactivex.rxjava3.core.*;
+import mlesiewski.sillydb.testinfrastructure.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.*;
 import org.junit.jupiter.params.*;
 import org.junit.jupiter.params.provider.*;
 
-import static mlesiewski.sillydb.CategoryName.categoryName;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
+import java.util.*;
+
+import static mlesiewski.sillydb.CategoryName.*;
+import static mlesiewski.sillydb.PropertyName.*;
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @DisplayName("thing")
 @TestMethodOrder(OrderAnnotation.class)
+@TestInstance(PER_CLASS)
 class ThingCrudTest {
 
-    private static final CategoryName SWEETS = categoryName("sweets");
-
     @ParameterizedTest(name = "{0}")
-    @DisplayName("can be saved")
+    @DisplayName("when saved it gets a name")
     @ArgumentsSource(AllDbTypes.class)
     @Order(1)
     void thingCanBeSaved(SillyDb sillyDb) {
         // given - a category
-        var sweets = sillyDb.createCategory(SWEETS)
-                .blockingGet();
+        var sweets = sweets(sillyDb);
 
         // when - creating new thing
         var marshmallow = sweets.createNewThing();
@@ -32,70 +35,221 @@ class ThingCrudTest {
         var saveResult = sweets.put(marshmallow);
 
         // then - save made no error
-        saveResult
-                .test()
-                .assertNoErrors();
+        saveResult.test()
+                .assertNoErrors()
+                .dispose();
 
         // then - saved thing has a name
-        var savedThing = saveResult.blockingGet();
-        var name = savedThing.name();
-        assertThat(name).isNotNull();
-        assertThat(name.toString()).isNotNull();
+        saveResult.test()
+                .assertValue(Objects::nonNull)
+                .dispose();
     }
 
     @ParameterizedTest(name = "{0}")
-    @DisplayName("can be found")
+    @DisplayName("can be found by name")
     @ArgumentsSource(AllDbTypes.class)
-    void thingCanBeFound(SillyDb sillyDb) {
-        // given - a thing saved to a category
-        var sweets = sillyDb.findCategory(SWEETS)
+    @Order(2)
+    void thingCanBeFoundByName(SillyDb sillyDb) {
+        // given - new thing with a name
+        var sweets = sweets(sillyDb);
+        var marshmallow = sweets.createNewThing();
+        var savedMarshmallow = sweets
+                .put(marshmallow)
                 .blockingGet();
-        var candy = sweets.createNewThing();
-        var savedCandy = sweets.put(candy)
-                .blockingGet();
-        var candyName = savedCandy.name();
+        var marshmallowName = savedMarshmallow.name();
 
-        // when - searching for a candy
-        var findResult = sweets.findBy(candyName);
+        // when - searching for a marshmallow
+        var findResult = sweets.findBy(marshmallowName);
 
         // then - search succeeds
         var foundThing = findResult.blockingGet();
-        assertThat(foundThing.name()).isEqualTo(candyName);
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @DisplayName("can be updated")
-    @ArgumentsSource(AllDbTypes.class)
-    void thingCanBeUpdated() {
-        // given
-
-        // when
-
-        // then
-        fail("not implemented");
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @DisplayName("can be deleted")
-    @ArgumentsSource(AllDbTypes.class)
-    void thingCanBeDeleted() {
-        // given
-
-        // when
-
-        // then
-        fail("not implemented");
+        assertThat(foundThing).isNotNull();
+        assertThat(foundThing.name()).isEqualTo(marshmallowName);
     }
 
     @ParameterizedTest(name = "{0}")
     @DisplayName("retains properties")
     @ArgumentsSource(AllDbTypes.class)
-    void thingRetainsProperties() {
-        // given
+    @Order(3)
+    void thingRetainsProperties(SillyDb sillyDb) {
+        // given - new thing with a property
+        var taste = createSweetTaste();
+        var sweets = sweets(sillyDb);
+        var marshmallow = sweets.createNewThing();
+        marshmallow.setProperty(taste);
+        var savedMarshmallow = sweets
+                .put(marshmallow)
+                .blockingGet();
+        var marshmallowName = savedMarshmallow.name();
+
+        // when - searching for a marshmallow
+        var findResult = sweets.findBy(marshmallowName);
+
+        // then - search succeeds
+        var foundThing = findResult.blockingGet();
+        assertThat(foundThing.name()).isEqualTo(marshmallowName);
+        foundThing.getProperty(taste.name())
+                .test()
+                .assertResult(taste)
+                .dispose();
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("can be updated")
+    @ArgumentsSource(AllDbTypes.class)
+    @Order(4)
+    void thingCanBeUpdated(SillyDb sillyDb) {
+        // given - new thing with no properties
+        var sweets = sweets(sillyDb);
+        var nameMarshmallow = sweets.createNewThing();
+        var namedMarshmallow = sweets.put(nameMarshmallow).blockingGet();
+        var marshmallowName = namedMarshmallow.name();
+
+        // when - add a property to a thing
+        var marshmallowWithoutProperties = sweets.findBy(marshmallowName)
+                .blockingGet();
+        var sweetTaste = createSweetTaste();
+        marshmallowWithoutProperties.setProperty(sweetTaste)
+                .map(sweets::put)
+                .test()
+                .assertValueCount(1)
+                .dispose();
+
+        // then - taste was saved
+        var namedSweetMarshmallow = sweets.findBy(marshmallowName)
+                .blockingGet();
+        namedSweetMarshmallow.getProperty(sweetTaste.name())
+                .test()
+                .assertResult(sweetTaste)
+                .dispose();
+
+        // when - change taste
+        var sourTaste = createSourTaste();
+        namedSweetMarshmallow.setProperty(sourTaste)
+                .map(sweets::put)
+                .test()
+                .assertComplete()
+                .dispose();
+
+        // then - taste is changed
+        var namedSourMarshmallow = sweets.findBy(marshmallowName).blockingGet();
+        namedSourMarshmallow.getProperty(sourTaste.name())
+                .test()
+                .assertValue(sourTaste)
+                .dispose();
+
+        // when - removing taste
+        namedSourMarshmallow.removeProperty(sourTaste.name())
+                .map(sweets::put)
+                .test()
+                .assertComplete()
+                .assertNoErrors()
+                .dispose();
+
+        // then - there is no taste
+        var namedTastelessMarshmallow = sweets.findBy(marshmallowName).blockingGet();
+        namedTastelessMarshmallow.getProperty(sourTaste.name())
+                .test()
+                .assertEmpty()
+                .dispose();
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("can be removed")
+    @ArgumentsSource(AllDbTypes.class)
+    @Order(4)
+    void thingCanBeRemoved(SillyDb sillyDb) {
+        // given - a category and a thing
+        var sweets = sweets(sillyDb);
+        var thing = sweets.createNewThing();
+        var namedThing = sweets.put(thing).blockingGet();
 
         // when
+        sweets.remove(namedThing)
+                .test()
+                .assertComplete()
+                .dispose();
+        var maybe = sweets.findBy(namedThing.name());
 
         // then
-        fail("not implemented");
+        maybe.test()
+                .assertComplete()
+                .assertNoValues()
+                .dispose();
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("can remove nonexistent property")
+    @ArgumentsSource(AllDbTypes.class)
+    @Order(5)
+    void canRemoveNonexistentProperty(SillyDb sillyDb) {
+        // given - a category and a thing and a property name
+        var sweets = sweets(sillyDb);
+        var thing = sweets.createNewThing();
+        var tasteName = new PropertyName("taste");
+
+        // when
+        var single = thing.removeProperty(tasteName);
+
+        // then
+        single.test()
+                .assertResult(thing)
+                .dispose();
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("getting nonexistent property yields empty Maybe")
+    @ArgumentsSource(AllDbTypes.class)
+    @Order(6)
+    void gettingNonexistentPropertyYieldsEmptyMaybe(SillyDb sillyDb) {
+        // given - a category and a thing and a property name
+        var sweets = sweets(sillyDb);
+        var thing = sweets.createNewThing();
+        var tasteName = new PropertyName("taste");
+
+        // when - get
+        var maybe = thing.getProperty(tasteName);
+
+        // then
+        maybe.test()
+                .assertComplete()
+                .assertNoValues()
+                .dispose();
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("can be removed if it was not in the category")
+    @ArgumentsSource(AllDbTypes.class)
+    @Order(7)
+    void canRemoveNonexistentThing(SillyDb sillyDb) {
+        // given - a category and a thing name
+        var sweets = sweets(sillyDb);
+        var name = new ThingName("placebo");
+
+        // when
+        var completable = sweets.remove(name);
+
+        // then
+        completable.test()
+                .assertComplete()
+                .assertNoErrors()
+                .dispose();
+    }
+
+    private Property createSweetTaste() {
+        return new Property(propertyName("taste"), "sweet");
+    }
+
+    private Property createSourTaste() {
+        return new Property(propertyName("taste"), "sour");
+    }
+
+    private Category sweets(SillyDb sillyDb) {
+        var name = categoryName("sweets");
+        SingleSource<Category> newCategory = observer -> sillyDb.createCategory(name)
+                .subscribe(observer);
+        return sillyDb.findCategory(name)
+                .switchIfEmpty(newCategory)
+                .blockingGet();
     }
 }

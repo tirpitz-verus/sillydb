@@ -6,13 +6,14 @@ import mlesiewski.sillydb.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-class BaseCategory implements Category {
+class InMemoryCategory implements Category {
 
     private final CategoryName name;
     private final SillyDb db;
     private final Map<ThingName, NamedThing> things;
+    private long thingCounter = 0;
 
-    BaseCategory(CategoryName name, SillyDb db) {
+    InMemoryCategory(CategoryName name, SillyDb db) {
         this.name = name;
         this.db = db;
         things = new ConcurrentHashMap<>();
@@ -30,12 +31,30 @@ class BaseCategory implements Category {
 
     @Override
     public Single<NamedThing> put(Thing thing) {
-        return null;
+        var name = createThingName();
+        var namedThing = new InMemoryNamedThing(thing, name);
+        things.put(name, namedThing);
+        return Single.just(namedThing);
+    }
+
+    private ThingName createThingName() {
+        thingCounter++;
+        return new ThingName(String.valueOf(thingCounter));
     }
 
     @Override
     public Maybe<NamedThing> findBy(ThingName name) {
-        return null;
+        if (things.containsKey(name)) {
+            return Maybe.just(things.get(name));
+        } else {
+            return Maybe.empty();
+        }
+    }
+
+    @Override
+    public Completable remove(ThingName name) {
+        things.remove(name);
+        return Completable.complete();
     }
 
     @Override
@@ -43,10 +62,9 @@ class BaseCategory implements Category {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof BaseCategory)) {
+        if (!(o instanceof InMemoryCategory that)) {
             return false;
         }
-        BaseCategory that = (BaseCategory) o;
         return Objects.equals(name, that.name);
     }
 
