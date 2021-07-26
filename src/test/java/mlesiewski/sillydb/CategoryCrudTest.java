@@ -94,4 +94,27 @@ class CategoryCrudTest {
                 .assertError(CategoryDoesNotExist.class)
                 .assertError(t -> t.getMessage().contains(CATEGORY_NAME.value));
     }
+
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("can be checked if it exists")
+    @ArgumentsSource(AllDbTypes.class)
+    @Order(7)
+    void canCheckIfCategoryExists(SillyDb sillyDb) {
+        // when
+        var existsAfterDeletion = sillyDb.categoryExists(CATEGORY_NAME);
+
+        // then
+        assertThat(existsAfterDeletion).isFalse();
+
+        // when
+        sillyDb.createCategory(CATEGORY_NAME)
+                .test()
+                .assertComplete()
+                .dispose();
+
+        var existsAfterCreation = sillyDb.categoryExists(CATEGORY_NAME);
+
+        // then
+        assertThat(existsAfterCreation).isTrue();
+    }
 }

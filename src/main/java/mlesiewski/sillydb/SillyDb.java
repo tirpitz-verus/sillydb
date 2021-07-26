@@ -9,4 +9,6 @@ public interface SillyDb {
     Maybe<Category> findCategory(CategoryName name);
 
     Completable deleteCategory(CategoryName name);
+
+    boolean categoryExists(CategoryName categoryName);
 }
