@@ -7,90 +7,97 @@ import org.junit.jupiter.api.MethodOrderer.*;
 import org.junit.jupiter.params.*;
 import org.junit.jupiter.params.provider.*;
 
+import java.util.*;
+
+import static mlesiewski.sillydb.testinfrastructure.testdatabuilder.TestDataBuilder.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("category")
 @TestMethodOrder(OrderAnnotation.class)
 class CategoryCrudTest {
 
-    public static final CategoryName CATEGORY_NAME = new CategoryName("pets");
+    static final CategoryName CATEGORY_NAME = new CategoryName("pets");
 
     @ParameterizedTest(name = "{0}")
     @DisplayName("can be created")
     @ArgumentsSource(AllDbTypes.class)
-    @Order(1)
     void canCreateCategory(SillyDb sillyDb) {
         // when - creating category
-        var newCategory = sillyDb.createCategory(CATEGORY_NAME)
-                .blockingGet();
-
-        // then - category si created
-        assertThat(newCategory).isNotNull();
-        assertThat(newCategory.name()).isEqualTo(CATEGORY_NAME);
+        sillyDb.createCategory(CATEGORY_NAME)
+                .test()
+        // then - value has a correct name
+                .assertValue(v -> v.name().equals(CATEGORY_NAME))
+                .assertNoErrors()
+                .assertComplete()
+                .dispose();
     }
 
 
     @ParameterizedTest(name = "{0}")
     @DisplayName("cannot be overwritten")
     @ArgumentsSource(AllDbTypes.class)
-    @Order(2)
     void cannotOverwriteCategory(SillyDb sillyDb) {
+        // given
+        using(sillyDb).withCategory(CATEGORY_NAME);
+
         // when
-        var response = sillyDb.createCategory(CATEGORY_NAME);
+        sillyDb.createCategory(CATEGORY_NAME).test()
 
         // then
-        response
-                .test()
                 .assertError(CannotCreateCategory.class)
-                .assertError(t -> t.getMessage().contains(CATEGORY_NAME.value));
+                .assertError(t -> t.getMessage().contains(CATEGORY_NAME.value))
+                .dispose();
     }
 
     @ParameterizedTest(name = "{0}")
     @DisplayName("can be found by name")
     @ArgumentsSource(AllDbTypes.class)
-    @Order(3)
     void canBeFoundByName(SillyDb sillyDb) {
+        // given - existing category
+        var category = using(sillyDb)
+                .withCategory(CATEGORY_NAME)
+                .getCategory();
+
         // when - searching for the category
-        var categoryMaybe = sillyDb.findCategory(CATEGORY_NAME);
-        var existingCategory = categoryMaybe
-                .blockingGet();
+        sillyDb.findCategory(CATEGORY_NAME).test()
 
         // then - category was found
-        assertThat(existingCategory).isNotNull();
-        assertThat(existingCategory.name()).isEqualTo(CATEGORY_NAME);
+                .assertValueSequence(List.of(category))
+                .assertComplete();
     }
 
     @ParameterizedTest(name = "{0}")
     @DisplayName("can be deleted by name")
     @ArgumentsSource(AllDbTypes.class)
-    @Order(4)
     void canDeleteCategoryByName(SillyDb sillyDb) {
+        // given - existing category
+        using(sillyDb).withCategory(CATEGORY_NAME);
+
         // when
-        var response = sillyDb.deleteCategory(CATEGORY_NAME);
+        sillyDb.deleteCategory(CATEGORY_NAME).test()
 
         // then
-        response
-                .test()
                 .assertNoErrors();
 
         // when - searching for deleted category
-        var categoryMaybe = sillyDb.findCategory(CATEGORY_NAME);
+        sillyDb.findCategory(CATEGORY_NAME).test()
 
         // then - nothing returned
-        categoryMaybe.test().assertComplete().assertNoValues();
+                .assertComplete()
+                .assertNoValues();
     }
 
     @ParameterizedTest(name = "{0}")
     @DisplayName("cannot be deleted if it does not exists")
     @ArgumentsSource(AllDbTypes.class)
-    @Order(6)
     void cannotDeleteNullCategory(SillyDb sillyDb) {
+        // given - without category
+        using(sillyDb).withoutCategory(CATEGORY_NAME);
+
         // when
-        var response = sillyDb.deleteCategory(CATEGORY_NAME);
+        sillyDb.deleteCategory(CATEGORY_NAME).test()
 
         // then
-        response
-                .test()
                 .assertError(CategoryDoesNotExist.class)
                 .assertError(t -> t.getMessage().contains(CATEGORY_NAME.value));
     }
@@ -98,8 +105,10 @@ class CategoryCrudTest {
     @ParameterizedTest(name = "{0}")
     @DisplayName("can be checked if it exists")
     @ArgumentsSource(AllDbTypes.class)
-    @Order(7)
     void canCheckIfCategoryExists(SillyDb sillyDb) {
+        // given - without category
+        using(sillyDb).withoutCategory(CATEGORY_NAME);
+
         // when
         var existsAfterDeletion = sillyDb.categoryExists(CATEGORY_NAME);
 
