@@ -75,6 +75,11 @@ public class InMemorySillyDb implements SillyDb {
     }
 
     @Override
+    public boolean categoryExists(CategoryName categoryName) {
+        return categories.containsKey(categoryName);
+    }
+
+    @Override
     public String toString() {
         return "InMemorySillyDb{}";
     }
