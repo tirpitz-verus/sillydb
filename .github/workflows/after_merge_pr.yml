@@ -1,0 +1,22 @@
+name: aftermerge PR
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up JDK 16
+        uses: AdoptOpenJDK/install-jdk@v1
+        with:
+          version: '16'
+      - name: checkout code
+        uses: actions/checkout@v2
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build with Gradle
+        run: chmod +x gradlew || ./gradlew publish
+        env:
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
