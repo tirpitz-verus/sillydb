@@ -1,10 +1,15 @@
 package mlesiewski.sillydb.core;
 
+import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.*;
 import mlesiewski.sillydb.*;
+import mlesiewski.sillydb.predicate.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.*;
+
+import static io.reactivex.rxjava3.core.BackpressureStrategy.*;
 
 class InMemoryCategory implements Category {
 
@@ -60,6 +65,11 @@ class InMemoryCategory implements Category {
     }
 
     @Override
+    public <T> Flowable<NamedThing> findAllBy(SillyPredicate predicate) {
+        return Flowable.create(new FlowableFromThings(predicate), BUFFER);
+    }
+
+    @Override
     public Completable remove(ThingName name) {
         things.remove(name);
         return Completable.complete();
@@ -79,5 +89,28 @@ class InMemoryCategory implements Category {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    class FlowableFromThings implements FlowableOnSubscribe<NamedThing> {
+
+        private final SillyPredicate predicate;
+
+        FlowableFromThings(SillyPredicate predicate) {
+            this.predicate = predicate;
+        }
+
+        @Override
+        public void subscribe(@NonNull FlowableEmitter<NamedThing> emitter) {
+            for (Map.Entry<ThingName, NamedThing> entry : things.entrySet()) {
+                if (emitter.isCancelled()) {
+                    return;
+                }
+                var thing = entry.getValue();
+                if (predicate.test(thing)) {
+                    emitter.onNext(thing);
+                }
+            }
+            emitter.onComplete();
+        }
     }
 }
