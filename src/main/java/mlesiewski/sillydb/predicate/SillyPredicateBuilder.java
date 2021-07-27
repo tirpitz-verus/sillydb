@@ -2,6 +2,8 @@ package mlesiewski.sillydb.predicate;
 
 import mlesiewski.sillydb.*;
 
+import java.util.regex.*;
+
 public final class SillyPredicateBuilder {
 
     SillyPredicate current;
@@ -24,6 +26,16 @@ public final class SillyPredicateBuilder {
 
         public SillyPredicateBuilder valueIsEqualTo(String value) {
             current = new StringEqualitySillyPredicate(propertyName, value);
+            return SillyPredicateBuilder.this;
+        }
+
+        public SillyPredicateBuilder valueMatches(String regexp) {
+            var pattern = Pattern.compile(regexp);
+            return valueMatches(pattern);
+        }
+
+        public SillyPredicateBuilder valueMatches(Pattern pattern) {
+            current = new RegExpSillyPredicate(propertyName, pattern);
             return SillyPredicateBuilder.this;
         }
     }
