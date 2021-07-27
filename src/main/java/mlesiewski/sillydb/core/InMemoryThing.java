@@ -10,7 +10,7 @@ import static java.util.Collections.unmodifiableMap;
 
 class InMemoryThing implements Thing {
 
-    private final Map<PropertyName, Property> properties;
+    private final Map<PropertyName, PropertyValue> properties;
 
     InMemoryThing(Thing thing) {
         this(thing.properties());
@@ -20,34 +20,34 @@ class InMemoryThing implements Thing {
         this(emptyMap());
     }
 
-    protected InMemoryThing(Map<PropertyName, Property> properties) {
+    protected InMemoryThing(Map<PropertyName, PropertyValue> properties) {
         this.properties = unmodifiableMap(properties);
     }
 
     @Override
-    public Single<Thing> setProperty(Property property) {
+    public Single<Thing> setProperty(PropertyName propertyName, PropertyValue propertyValue) {
         var temp = new HashMap<>(properties);
-        temp.put(property.name(), property);
+        temp.put(propertyName, propertyValue);
         final var newThing = new InMemoryThing(temp);
         return Single.just(newThing);
     }
 
     @Override
-    public Maybe<Property> getProperty(PropertyName name) {
+    public Maybe<PropertyValue> getProperty(PropertyName name) {
         if (properties.containsKey(name)) {
-            return getExistingProprty(name);
+            return getExistingProperty(name);
         } else {
             return Maybe.empty();
         }
     }
 
-    private Maybe<Property> getExistingProprty(PropertyName name) {
+    private Maybe<PropertyValue> getExistingProperty(PropertyName name) {
         var property = properties.get(name);
         return Maybe.just(property);
     }
 
     @Override
-    public Map<PropertyName, Property> properties() {
+    public Map<PropertyName, PropertyValue> properties() {
         return new HashMap<>(properties);
     }
 

@@ -69,8 +69,13 @@ public class TestDataBuilder implements GenericBuilder, PropertyBuilder {
 
     @Override
     public PropertyBuilder withProperty(PropertyName name, String value) {
-        var property = new Property(name, value);
-        lastThing.setProperty(property)
+        var propertyValue = new PropertyValue(value);
+        return withProperty(name, propertyValue);
+    }
+
+    @Override
+    public PropertyBuilder withProperty(PropertyName name, PropertyValue value) {
+        lastThing.setProperty(name, value)
                 .flatMap(t -> lastCategory.put(t))
                 .test()
                 .assertComplete()
