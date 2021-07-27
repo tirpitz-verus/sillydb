@@ -13,4 +13,11 @@ public final class CategoryWithBadNameCannotBeCreated extends SillyDbError {
     public CategoryWithBadNameCannotBeCreated(String offender) {
         super("cannot create a category name containing [" + offender + "]");
     }
+
+    /**
+     * Creates a new instance for a situation where the empty category name
+     */
+    public CategoryWithBadNameCannotBeCreated() {
+        super("cannot create empty category name");
+    }
 }
