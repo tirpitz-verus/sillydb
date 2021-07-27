@@ -1,5 +1,6 @@
 package mlesiewski.sillydb.core;
 
+import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.*;
 import mlesiewski.sillydb.*;
 
@@ -7,6 +8,7 @@ import java.util.*;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableMap;
+import static java.util.Objects.*;
 
 class InMemoryThing implements Thing {
 
@@ -25,7 +27,9 @@ class InMemoryThing implements Thing {
     }
 
     @Override
-    public Single<Thing> setProperty(PropertyName propertyName, PropertyValue propertyValue) {
+    public Single<Thing> setProperty(@NonNull PropertyName propertyName, @NonNull PropertyValue propertyValue) {
+        requireNonNull(propertyName);
+        requireNonNull(propertyValue);
         var temp = new HashMap<>(properties);
         temp.put(propertyName, propertyValue);
         final var newThing = new InMemoryThing(temp);
@@ -34,6 +38,7 @@ class InMemoryThing implements Thing {
 
     @Override
     public Maybe<PropertyValue> getProperty(PropertyName name) {
+        requireNonNull(name);
         if (properties.containsKey(name)) {
             return getExistingProperty(name);
         } else {
@@ -52,7 +57,8 @@ class InMemoryThing implements Thing {
     }
 
     @Override
-    public Single<Thing> removeProperty(PropertyName name) {
+    public Single<Thing> removeProperty(@NonNull PropertyName name) {
+        requireNonNull(name);
         var temp = new HashMap<>(properties);
         temp.remove(name);
         var newThing = new InMemoryThing(temp);

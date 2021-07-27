@@ -4,6 +4,7 @@ import java.util.*;
 
 abstract class Name {
 
+    /** why is this javadoc required for a package private class? */
     protected final String value;
 
     protected Name(String value) {

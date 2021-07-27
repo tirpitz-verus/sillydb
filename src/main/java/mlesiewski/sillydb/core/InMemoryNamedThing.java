@@ -1,9 +1,12 @@
 package mlesiewski.sillydb.core;
 
+import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.*;
 import mlesiewski.sillydb.*;
 
 import java.util.*;
+
+import static java.util.Objects.*;
 
 class InMemoryNamedThing extends InMemoryThing implements NamedThing {
 
@@ -20,7 +23,9 @@ class InMemoryNamedThing extends InMemoryThing implements NamedThing {
     }
 
     @Override
-    public Single<Thing> setProperty(PropertyName propertyName, PropertyValue propertyValue) {
+    public Single<Thing> setProperty(@NonNull PropertyName propertyName, @NonNull PropertyValue propertyValue) {
+        requireNonNull(propertyName);
+        requireNonNull(propertyValue);
         var temp = properties();
         temp.put(propertyName, propertyValue);
         final var newThing = new InMemoryNamedThing(temp, name());
@@ -28,7 +33,8 @@ class InMemoryNamedThing extends InMemoryThing implements NamedThing {
     }
 
     @Override
-    public Single<Thing> removeProperty(PropertyName name) {
+    public Single<Thing> removeProperty(@NonNull PropertyName name) {
+        requireNonNull(name);
         var temp = properties();
         temp.remove(name);
         final var newThing = new InMemoryNamedThing(temp, name());

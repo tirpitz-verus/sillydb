@@ -8,11 +8,19 @@ import java.util.*;
 
 import static org.slf4j.LoggerFactory.*;
 
+/**
+ * In-memory variant of the {@link mlesiewski.sillydb.SillyDb}.
+ */
 public class InMemorySillyDb implements SillyDb {
 
+    /** to be made private when {@link FileSillyDb} gets implemented */
     protected final Logger logger;
+    /** to be made private when {@link FileSillyDb} gets implemented */
     protected final Map<CategoryName, Category> categories;
 
+    /**
+     * Constructs instances of this class.
+     */
     public InMemorySillyDb() {
         logger = getLogger(this.getClass());
         categories = new HashMap<>();

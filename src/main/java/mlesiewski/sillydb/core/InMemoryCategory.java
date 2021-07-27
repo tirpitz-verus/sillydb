@@ -65,7 +65,7 @@ class InMemoryCategory implements Category {
     }
 
     @Override
-    public <T> Flowable<NamedThing> findAllBy(SillyPredicate predicate) {
+    public Flowable<NamedThing> findAllBy(SillyPredicate predicate) {
         return Flowable.create(new FlowableFromThings(predicate), BUFFER);
     }
 
