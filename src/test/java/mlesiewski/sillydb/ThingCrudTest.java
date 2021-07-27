@@ -1,6 +1,5 @@
 package mlesiewski.sillydb;
 
-import io.reactivex.rxjava3.core.*;
 import mlesiewski.sillydb.testinfrastructure.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.DisplayName;
@@ -10,16 +9,18 @@ import org.junit.jupiter.params.provider.*;
 
 import java.util.*;
 
-import static mlesiewski.sillydb.CategoryName.*;
 import static mlesiewski.sillydb.PropertyName.*;
+import static mlesiewski.sillydb.PropertyValue.*;
 import static mlesiewski.sillydb.testinfrastructure.testdatabuilder.TestDataBuilder.*;
-import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("thing")
 @TestMethodOrder(OrderAnnotation.class)
 class ThingCrudTest {
 
     static final CategoryName CATEGORY_NAME = new CategoryName("pets");
+    public static final PropertyName TASTE = propertyName("taste");
+    public static final PropertyValue SWEET = propertyValue("sweet");
+    public static final PropertyValue SOUR = propertyValue("sour");
 
     @ParameterizedTest(name = "{0}")
     @DisplayName("when saved it gets a name")
@@ -63,7 +64,7 @@ class ThingCrudTest {
         // when - searching for a marshmallow
         sweets.findBy(marshmallowName).test()
 
-        // then - search succeeds
+                // then - search succeeds
                 .assertValue(v -> v.name().equals(marshmallowName))
                 .assertComplete()
                 .dispose();
@@ -77,7 +78,7 @@ class ThingCrudTest {
         var result = using(sillyDb)
                 .withCategory(CATEGORY_NAME)
                 .withThing()
-                .withProperty(propertyName("taste"), "sweet")
+                .withProperty(TASTE, SWEET)
                 .getThing();
         var sweets = result.category;
         var savedMarshmallow = result.thing;
@@ -86,12 +87,12 @@ class ThingCrudTest {
         // when - searching for a marshmallow
         sweets.findBy(marshmallowName).test()
 
-        // then - search succeeds
+                // then - search succeeds
                 .assertValue(v -> v.name().equals(marshmallowName))
                 .assertValue(v -> {
-                    v.getProperty(propertyName("taste"))
+                    v.getProperty(TASTE)
                             .test()
-                            .assertValue(p -> p.value().equals("sweet"))
+                            .assertValue(p -> p.equals(SWEET))
                             .dispose();
                     return true;
                 })
@@ -112,26 +113,25 @@ class ThingCrudTest {
         var marshmallowName = savedMarshmallow.name();
 
         // when - add a property to the thing
-        var marshmallowWithoutProperties = sweets.findBy(marshmallowName)
-                .blockingGet();
-        var sweetTaste = createSweetTaste();
-        marshmallowWithoutProperties.setProperty(sweetTaste)
+        sweets.findBy(marshmallowName)
+                .toSingle()
+                .flatMap(t -> t.setProperty(TASTE, SWEET))
                 .flatMap(sweets::put)
                 .test()
                 .assertValueCount(1)
+                .assertNoErrors()
                 .dispose();
 
         // then - taste was saved
         var namedSweetMarshmallow = sweets.findBy(marshmallowName)
                 .blockingGet();
-        namedSweetMarshmallow.getProperty(sweetTaste.name())
+        namedSweetMarshmallow.getProperty(TASTE)
                 .test()
-                .assertResult(sweetTaste)
+                .assertResult(SWEET)
                 .dispose();
 
         // when - change taste
-        var sourTaste = createSourTaste();
-        namedSweetMarshmallow.setProperty(sourTaste)
+        namedSweetMarshmallow.setProperty(TASTE, SOUR)
                 .flatMap(sweets::put)
                 .test()
                 .assertComplete()
@@ -139,13 +139,13 @@ class ThingCrudTest {
 
         // then - taste is changed
         var namedSourMarshmallow = sweets.findBy(marshmallowName).blockingGet();
-        namedSourMarshmallow.getProperty(sourTaste.name())
+        namedSourMarshmallow.getProperty(TASTE)
                 .test()
-                .assertValue(sourTaste)
+                .assertValue(SOUR)
                 .dispose();
 
         // when - removing taste
-        namedSourMarshmallow.removeProperty(sourTaste.name())
+        namedSourMarshmallow.removeProperty(TASTE)
                 .flatMap(sweets::put)
                 .test()
                 .assertComplete()
@@ -154,7 +154,7 @@ class ThingCrudTest {
 
         // then - there is no taste
         sweets.findBy(marshmallowName)
-                .flatMap(thing -> thing.getProperty(sourTaste.name()))
+                .flatMap(thing -> thing.getProperty(TASTE))
                 .test()
                 .assertNoValues()
                 .dispose();
@@ -245,13 +245,5 @@ class ThingCrudTest {
                 .assertComplete()
                 .assertNoErrors()
                 .dispose();
-    }
-
-    private Property createSweetTaste() {
-        return new Property(propertyName("taste"), "sweet");
-    }
-
-    private Property createSourTaste() {
-        return new Property(propertyName("taste"), "sour");
     }
 }

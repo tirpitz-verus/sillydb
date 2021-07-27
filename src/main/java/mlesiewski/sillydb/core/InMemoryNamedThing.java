@@ -14,15 +14,15 @@ class InMemoryNamedThing extends InMemoryThing implements NamedThing {
         this.name = name;
     }
 
-    private InMemoryNamedThing(Map<PropertyName, Property> properties, ThingName name) {
+    private InMemoryNamedThing(Map<PropertyName, PropertyValue> properties, ThingName name) {
         super(properties);
         this.name = name;
     }
 
     @Override
-    public Single<Thing> setProperty(Property property) {
+    public Single<Thing> setProperty(PropertyName propertyName, PropertyValue propertyValue) {
         var temp = properties();
-        temp.put(property.name(), property);
+        temp.put(propertyName, propertyValue);
         final var newThing = new InMemoryNamedThing(temp, name());
         return Single.just(newThing);
     }
