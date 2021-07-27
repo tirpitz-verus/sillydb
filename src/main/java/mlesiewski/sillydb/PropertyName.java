@@ -1,9 +1,23 @@
 package mlesiewski.sillydb;
 
+import io.reactivex.rxjava3.annotations.*;
+
 import static java.util.Objects.requireNonNull;
+import static mlesiewski.sillydb.PropertyNameValidator.*;
 
 /**
  * Name of the property of a {@link Thing}.
+ * <p>
+ * A name is required to have one or more of the characters below:
+ * <ul>
+ *     <li>lowercase and uppercase letters</li>
+ *     <li>numbers</li>
+ *     <li>dosts '.'</li>
+ *     <li>dashes '-'</li>
+ *     <li>underscores '_'</li>
+ *     <li>plus signs '+'</li>
+ *     <li>equality signs '='</li>
+ * </ul>
  */
 public final class PropertyName extends Name {
 
@@ -13,7 +27,7 @@ public final class PropertyName extends Name {
      * @param name name for the property
      * @return new instance
      */
-    public static PropertyName propertyName(String name) {
+    public static PropertyName propertyName(@NonNull String name) {
         return new PropertyName(name);
     }
 
@@ -21,10 +35,14 @@ public final class PropertyName extends Name {
      * Creates a new instance.
      *
      * @param name name for the property
-     * @throws NullPointerException if the name is null
+     * @throws NullPointerException           if the name is null
+     * @throws BadPropertyNameCannotBeCreated if the name does not meet requirements
      */
-    public PropertyName(String name) {
-        // TODO some name validation should happen
-        super(requireNonNull(name, "property name cannot be null"));
+    public PropertyName(@NonNull String name) {
+        super(
+                returnValidPropertyNameOrThrow(
+                        requireNonNull(name, "property name cannot be null")
+                )
+        );
     }
 }

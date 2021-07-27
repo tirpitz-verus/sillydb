@@ -3,7 +3,7 @@ package mlesiewski.sillydb;
 import io.reactivex.rxjava3.annotations.*;
 
 import static java.util.Objects.requireNonNull;
-import static mlesiewski.sillydb.CategoryNameValidator.returnValidNameOrThrow;
+import static mlesiewski.sillydb.CategoryNameValidator.*;
 
 /**
  * Name for a {@link Category}.
@@ -40,7 +40,7 @@ public final class CategoryName extends Name {
      */
     public CategoryName(@NonNull String name) {
         super(
-                returnValidNameOrThrow(
+                returnValidCategoryNameOrThrow(
                         requireNonNull(name, "category name cannot be null")
                 )
         );
