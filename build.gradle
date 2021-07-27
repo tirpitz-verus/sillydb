@@ -1,5 +1,6 @@
 plugins {
     id 'java-library'
+    id 'maven-publish'
 }
 
 group 'mlesiewski'
@@ -9,6 +10,44 @@ java {
     withSourcesJar()
     withJavadocJar()
     modularity.inferModulePath = true
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/tirpitz-verus/sillydb")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            from(components.java)
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'SillyDB'
+                description = 'a silly database in java'
+                url = 'https://github.com/tirpitz-verus/sillydb'
+
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://raw.githubusercontent.com/tirpitz-verus/sillydb/main/LICENSE'
+                    }
+                }
+            }
+        }
+    }
 }
 
 repositories {
@@ -32,3 +71,6 @@ tasks.compileJava {
     options.javaModuleVersion = provider { project.version }
 }
 
+javadoc {
+    options.addBooleanOption('html5', true)
+}
