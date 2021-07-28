@@ -16,7 +16,16 @@ jobs:
         uses: actions/checkout@v2
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      - name: Build with Gradle
+      - name: upload packages
         run: chmod +x gradlew && ./gradlew publish --info
         env:
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: leave only 5 latest versions
+        uses: epitomeglobal/remove-package-versions@master
+        with:
+          remove-semver: true
+          remove-prerelease-semver: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
