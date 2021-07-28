@@ -8,24 +8,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up JDK 16
+      - name: set up JDK 16
         uses: AdoptOpenJDK/install-jdk@v1
         with:
           version: '16'
       - name: checkout code
         uses: actions/checkout@v2
-      - name: Grant execute permission for gradlew
+      - name: grant execute permission for gradlew
         run: chmod +x gradlew
       - name: upload packages
         run: chmod +x gradlew && ./gradlew publish --info
         env:
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: leave only 5 latest versions
-        uses: epitomeglobal/remove-package-versions@master
+      - name: remove oldest version
+        if: ${{ success() }}
+        uses: actions/delete-package-versions@v1
         with:
-          remove-semver: true
-          remove-prerelease-semver: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          package-name: mlesiewski.sillydb
+          token: ${{ secrets.GITHUB_TOKEN }}
 
 
