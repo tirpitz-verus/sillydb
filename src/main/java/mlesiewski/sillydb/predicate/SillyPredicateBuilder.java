@@ -81,6 +81,16 @@ public final class SillyPredicateBuilder {
             current = new RegExpSillyPredicate(propertyName, pattern);
             return SillyPredicateBuilder.this;
         }
+
+        /**
+         * Creates a {@link PropertyExistenceSillyPredicate} instance and stores it.
+         *
+         * @return next part of the call chain
+         */
+        public SillyPredicateBuilder exists() {
+            current = new PropertyExistenceSillyPredicate(propertyName);
+            return SillyPredicateBuilder.this;
+        }
     }
 
     /**

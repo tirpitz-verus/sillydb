@@ -2,6 +2,7 @@ package mlesiewski.sillydb.predicate;
 
 import mlesiewski.sillydb.*;
 
+import static java.lang.Boolean.*;
 import static java.util.Objects.*;
 
 class StringEqualitySillyPredicate implements SillyPredicate {
@@ -17,8 +18,8 @@ class StringEqualitySillyPredicate implements SillyPredicate {
     @Override
     public boolean test(NamedThing thing) {
         return thing.getProperty(propertyName)
-                .filter(p -> value.equals(p.value()))
-                .isEmpty()
+                .map(p -> value.equals(p.value()))
+                .defaultIfEmpty(FALSE)
                 .blockingGet();
     }
 }

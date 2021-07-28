@@ -13,6 +13,11 @@ import static mlesiewski.sillydb.testinfrastructure.testdatabuilder.TestDataBuil
 class PredicateTest {
 
     static final PropertyName TASTE = propertyName("taste");
+    static final PropertyName COLOR = propertyName("color");
+    static final CategoryName SWEETS = categoryName("sweets");
+    static final String SWEET = "sweet";
+    static final String SOUR = "sour";
+    public static final String RED = "red";
 
     @ParameterizedTest(name = "{0}")
     @DisplayName("can find things by string equality")
@@ -20,23 +25,23 @@ class PredicateTest {
     void canFindThingsByStringEquality(SillyDb sillyDb) {
         // given
         var sweets = using(sillyDb)
-                .withCategory(categoryName("sweets"))
+                .withCategory(SWEETS)
                 .withThing()
-                .withProperty(TASTE, "sweet")
+                .withProperty(TASTE, SWEET)
                 .withThing()
-                .withProperty(TASTE, "sour")
+                .withProperty(TASTE, SOUR)
                 .getCategory();
 
         // when
         var predicate = predicateWhere()
-                .property(propertyName("taste"))
-                .valueIsEqualTo("sweet")
+                .property(TASTE)
+                .valueIsEqualTo(SWEET)
                 .build();
         sweets.findAllBy(predicate).test()
 
         // then
                 .assertValueCount(1)
-                .assertValue(v -> v.getProperty(TASTE).filter(p -> p.value().equals("sweet")).isEmpty().blockingGet())
+                .assertValue(v -> SWEET.equals(v.getProperty(TASTE).map(PropertyValue::value).blockingGet()))
                 .assertComplete()
                 .cancel();
     }
@@ -47,23 +52,51 @@ class PredicateTest {
     void canFindThingsByRegExp(SillyDb sillyDb) {
         // given
         var sweets = using(sillyDb)
-                .withCategory(categoryName("sweets"))
+                .withCategory(SWEETS)
                 .withThing()
-                .withProperty(TASTE, "sweet")
+                .withProperty(TASTE, SWEET)
                 .withThing()
-                .withProperty(TASTE, "sour")
+                .withProperty(TASTE, SOUR)
                 .getCategory();
 
         // when
         var predicate = predicateWhere()
-                .property(propertyName("taste"))
-                .valueMatches("^sweet$")
+                .property(TASTE)
+                .valueMatches("^" + SWEET + "$")
                 .build();
         sweets.findAllBy(predicate).test()
 
         // then
                 .assertValueCount(1)
-                .assertValue(v -> v.getProperty(TASTE).filter(p -> p.value().equals("sweet")).isEmpty().blockingGet())
+                .assertValue(v -> SWEET.equals(v.getProperty(TASTE).map(PropertyValue::value).blockingGet()))
+                .assertComplete()
+                .cancel();
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("can find things for which a property exists")
+    @ArgumentsSource(AllDbTypes.class)
+    void canFindThingsByPropertyExistence(SillyDb sillyDb) {
+        // given
+        var sweets = using(sillyDb)
+                .withCategory(SWEETS)
+                .withThing()
+                .withProperty(TASTE, SWEET)
+                .withProperty(COLOR, RED)
+                .withThing()
+                .withProperty(TASTE, SWEET)
+                .getCategory();
+
+        // when
+        var predicate = predicateWhere()
+                .property(COLOR)
+                .exists()
+                .build();
+        sweets.findAllBy(predicate).test()
+
+        // then
+                .assertValueCount(1)
+                .assertValue(v -> RED.equals(v.getProperty(COLOR).map(PropertyValue::value).blockingGet()))
                 .assertComplete()
                 .cancel();
     }
