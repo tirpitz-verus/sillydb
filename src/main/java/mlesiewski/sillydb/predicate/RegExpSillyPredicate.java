@@ -4,6 +4,8 @@ import mlesiewski.sillydb.*;
 
 import java.util.regex.*;
 
+import static java.lang.Boolean.*;
+
 /**
  * A {@link SillyPredicate} implementation that tests if the specified property has a value matching the pattern.
  */
@@ -26,8 +28,8 @@ public class RegExpSillyPredicate implements SillyPredicate {
     @Override
     public boolean test(NamedThing thing) {
         return thing.getProperty(propertyName)
-                .filter(p -> pattern.matcher(p.value()).matches())
-                .isEmpty()
+                .map(p -> pattern.matcher(p.value()).matches())
+                .defaultIfEmpty(FALSE)
                 .blockingGet();
     }
 }
