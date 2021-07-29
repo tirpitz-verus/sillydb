@@ -40,8 +40,7 @@ class PredicateTest {
         sweets.findAllBy(predicate).test()
 
         // then
-                .assertValueCount(1)
-                .assertValue(v -> SWEET.equals(v.getProperty(TASTE).map(PropertyValue::value).blockingGet()))
+                .assertValue(v -> propertyHasValue(v, TASTE, SWEET))
                 .assertComplete()
                 .cancel();
     }
@@ -67,8 +66,7 @@ class PredicateTest {
         sweets.findAllBy(predicate).test()
 
         // then
-                .assertValueCount(1)
-                .assertValue(v -> SWEET.equals(v.getProperty(TASTE).map(PropertyValue::value).blockingGet()))
+                .assertValue(v -> propertyHasValue(v, TASTE, SWEET))
                 .assertComplete()
                 .cancel();
     }
@@ -95,9 +93,46 @@ class PredicateTest {
         sweets.findAllBy(predicate).test()
 
         // then
-                .assertValueCount(1)
-                .assertValue(v -> RED.equals(v.getProperty(COLOR).map(PropertyValue::value).blockingGet()))
+                .assertValue(v -> propertyHasValue(v, COLOR, RED))
                 .assertComplete()
                 .cancel();
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("can combine predicates")
+    @ArgumentsSource(AllDbTypes.class)
+    void canCombinePredicates(SillyDb sillyDb) {
+        // given
+        var sweets = using(sillyDb)
+                .withCategory(SWEETS)
+                .withThing()
+                .withProperty(TASTE, SWEET)
+                .withThing()
+                .withProperty(TASTE, SOUR)
+                .withProperty(COLOR, RED)
+                .withThing()
+                .withProperty(COLOR, RED)
+                .getCategory();
+
+        // when
+        var predicate = predicateWhere()
+                .property(TASTE).valueIsEqualTo(SOUR)
+                .and()
+                .property(COLOR).valueIsEqualTo(RED)
+                .or()
+                .property(TASTE).valueIsEqualTo(SWEET)
+                .build();
+        sweets.findAllBy(predicate).test()
+
+                // then
+                .assertValueCount(2)
+                .assertValueAt(0, v -> propertyHasValue(v, TASTE, SWEET))
+                .assertValueAt(1, v -> propertyHasValue(v, TASTE, SOUR) && propertyHasValue(v, COLOR, RED) )
+                .assertComplete()
+                .cancel();
+    }
+
+    private boolean propertyHasValue(Thing thing, PropertyName name, String value) {
+        return value.equals(thing.getProperty(name).map(PropertyValue::value).blockingGet());
     }
 }
