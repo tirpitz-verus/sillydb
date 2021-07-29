@@ -2,6 +2,7 @@ package mlesiewski.sillydb.predicate;
 
 import mlesiewski.sillydb.*;
 
+import java.util.function.*;
 import java.util.regex.*;
 
 /**
@@ -9,15 +10,19 @@ import java.util.regex.*;
  *
  * <pre>{@code
  * // example usage:
- * predicateWhere()
+ * var redAndSweet = predicateWhere()
  *      .property(propertyName("taste"))
- *      .valueIsEqualTo("sweet")
+ *          .valueIsEqualTo("sweet")
+ *      .and()
+ *      .property(propertyName("color"))
+ *          .valueIsEqualTo("red")
  *      .build();
  * }</pre>
  */
 public final class SillyPredicateBuilder {
 
-    SillyPredicate current;
+    SillyPredicate currentPredicate;
+    Function<PropertyName, PropertySillyPredicateBuilder> nextPredicateBuilder = SinglePredicateBuilder::new;
 
     /**
      * A convenience method to start the builder call chain. Can be statically imported.
@@ -35,61 +40,45 @@ public final class SillyPredicateBuilder {
      * @return next part of the call chain
      */
     public PropertySillyPredicateBuilder property(PropertyName propertyName) {
-        return new PropertySillyPredicateBuilder(propertyName);
+        var predicateBuilder = nextPredicateBuilder.apply(propertyName);
+        nextPredicateBuilder = SinglePredicateBuilder::new;
+        return predicateBuilder;
     }
 
-    /**
-     * Creates specific predicate types.
-     */
-    public class PropertySillyPredicateBuilder {
+    class SinglePredicateBuilder implements PropertySillyPredicateBuilder {
 
         private final PropertyName propertyName;
 
-        PropertySillyPredicateBuilder(PropertyName propertyName) {
+        SinglePredicateBuilder(PropertyName propertyName) {
             this.propertyName = propertyName;
         }
 
-        /**
-         * Creates a {@link StringEqualitySillyPredicate} instance and stores it.
-         *
-         * @param value pattern to use
-         * @return next part of the call chain
-         */
+        @Override
         public SillyPredicateBuilder valueIsEqualTo(String value) {
-            current = new StringEqualitySillyPredicate(propertyName, value);
+            setCurrent(new StringEqualitySillyPredicate(propertyName, value));
             return SillyPredicateBuilder.this;
         }
 
-        /**
-         * Creates a {@link Pattern} instance form the regexp provided and calls {@link PropertySillyPredicateBuilder#valueMatches(Pattern)}.
-         *
-         * @param regexp pattern to use
-         * @return next part of the call chain
-         */
+        @Override
         public SillyPredicateBuilder valueMatches(String regexp) {
             var pattern = Pattern.compile(regexp);
             return valueMatches(pattern);
         }
 
-        /**
-         * Creates a {@link RegExpSillyPredicate} instance and stores it.
-         *
-         * @param pattern pattern to use
-         * @return next part of the call chain
-         */
+        @Override
         public SillyPredicateBuilder valueMatches(Pattern pattern) {
-            current = new RegExpSillyPredicate(propertyName, pattern);
+            setCurrent(new RegExpSillyPredicate(propertyName, pattern));
             return SillyPredicateBuilder.this;
         }
 
-        /**
-         * Creates a {@link PropertyExistenceSillyPredicate} instance and stores it.
-         *
-         * @return next part of the call chain
-         */
+        @Override
         public SillyPredicateBuilder exists() {
-            current = new PropertyExistenceSillyPredicate(propertyName);
+            setCurrent(new PropertyExistenceSillyPredicate(propertyName));
             return SillyPredicateBuilder.this;
+        }
+
+        void setCurrent(SillyPredicate predicate) {
+            currentPredicate = predicate;
         }
     }
 
@@ -99,6 +88,50 @@ public final class SillyPredicateBuilder {
      * @return predicate result
      */
     public SillyPredicate build() {
-        return current;
+        return currentPredicate;
+    }
+
+    /**
+     * Combines the current predicate with the next one
+     *
+     * @return next part of the call chain
+     */
+    public SillyPredicateBuilder and() {
+        nextPredicateBuilder = AndPredicateBuilder::new;
+        return this;
+    }
+
+    class AndPredicateBuilder extends SinglePredicateBuilder {
+
+        AndPredicateBuilder(PropertyName propertyName) {
+            super(propertyName);
+        }
+
+        @Override
+        void setCurrent(SillyPredicate nextPredicate) {
+            currentPredicate = currentPredicate.and(nextPredicate);
+        }
+    }
+
+    /**
+     * Combines the current predicate with the next one
+     *
+     * @return next part of the call chain
+     */
+    public SillyPredicateBuilder or() {
+        nextPredicateBuilder = OrPredicateBuilder::new;
+        return this;
+    }
+
+    class OrPredicateBuilder extends SinglePredicateBuilder {
+
+        OrPredicateBuilder(PropertyName propertyName) {
+            super(propertyName);
+        }
+
+        @Override
+        void setCurrent(SillyPredicate nextPredicate) {
+            currentPredicate = currentPredicate.or(nextPredicate);
+        }
     }
 }

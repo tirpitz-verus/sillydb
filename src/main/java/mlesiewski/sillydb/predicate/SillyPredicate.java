@@ -15,4 +15,24 @@ public interface SillyPredicate {
      * @return result of the test
      */
     boolean test(NamedThing thing);
+
+    /**
+     * Combines the current predicate with the next one using the logical AND operation.
+     *
+     * @param secondPredicate a predicate to combine this one with
+     * @return new predicate that combines this predicate and the second one
+     */
+    default SillyPredicate and(SillyPredicate secondPredicate) {
+        return new AndSillyPredicate(this, secondPredicate);
+    }
+
+    /**
+     * Combines the current predicate with the next one using the logical OR operation.
+     *
+     * @param secondPredicate a predicate to combine this one with
+     * @return new predicate that combines this predicate and the second one
+     */
+    default SillyPredicate or(SillyPredicate secondPredicate) {
+        return new OrSillyPredicate(this, secondPredicate);
+    }
 }
