@@ -1,4 +1,4 @@
-name: after merge PR
+name: after merge upload
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
       - name: grant execute permission for gradlew
         run: chmod +x gradlew
       - name: upload packages
-        run: chmod +x gradlew && ./gradlew publish --info
+        run: chmod +x gradlew && ./gradlew publish
         env:
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: remove oldest version
