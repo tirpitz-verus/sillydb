@@ -134,4 +134,26 @@ public final class SillyPredicateBuilder {
             currentPredicate = currentPredicate.or(nextPredicate);
         }
     }
+
+    /**
+     * Negates the next predicate.
+     *
+     * @return next part of the call chain
+     */
+    public SillyPredicateBuilder not() {
+        nextPredicateBuilder = NotPredicateBuilder::new;
+        return this;
+    }
+
+    class NotPredicateBuilder extends SinglePredicateBuilder {
+
+        NotPredicateBuilder(PropertyName propertyName) {
+            super(propertyName);
+        }
+
+        @Override
+        void setCurrent(SillyPredicate nextPredicate) {
+            currentPredicate = nextPredicate.not();
+        }
+    }
 }

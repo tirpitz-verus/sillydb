@@ -132,6 +132,32 @@ class PredicateTest {
                 .cancel();
     }
 
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("can negate predicates")
+    @ArgumentsSource(AllDbTypes.class)
+    void canNegatePredicates(SillyDb sillyDb) {
+        // given
+        var sweets = using(sillyDb)
+                .withCategory(SWEETS)
+                .withThing()
+                .withProperty(TASTE, SWEET)
+                .withThing()
+                .withProperty(TASTE, SOUR)
+                .getCategory();
+
+        // when
+        var predicate = predicateWhere()
+                .not()
+                .property(TASTE).valueIsEqualTo(SWEET)
+                .build();
+        sweets.findAllBy(predicate).test()
+
+                // then
+                .assertValue(v -> propertyHasValue(v, TASTE, SOUR))
+                .assertComplete()
+                .cancel();
+    }
+
     private boolean propertyHasValue(Thing thing, PropertyName name, String value) {
         return value.equals(thing.getProperty(name).map(PropertyValue::value).blockingGet());
     }
