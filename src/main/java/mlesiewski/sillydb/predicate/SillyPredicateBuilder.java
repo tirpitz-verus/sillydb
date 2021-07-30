@@ -10,11 +10,11 @@ import java.util.regex.*;
  *
  * <pre>{@code
  * // example usage:
- * var redAndSweet = predicateWhere()
+ * var sweetAndNotRed = predicateWhere()
  *      .property(propertyName("taste"))
  *          .valueIsEqualTo("sweet")
  *      .and()
- *      .property(propertyName("color"))
+ *      not().property(propertyName("color"))
  *          .valueIsEqualTo("red")
  *      .build();
  * }</pre>
@@ -54,8 +54,8 @@ public final class SillyPredicateBuilder {
         }
 
         @Override
-        public SillyPredicateBuilder valueIsEqualTo(String value) {
-            setCurrent(new StringEqualitySillyPredicate(propertyName, value));
+        public <T> SillyPredicateBuilder valueIsEqualTo(T value) {
+            setCurrent(new StringEqualitySillyPredicate<T>(propertyName, value));
             return SillyPredicateBuilder.this;
         }
 

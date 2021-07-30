@@ -8,8 +8,15 @@ import static java.util.Objects.*;
 
 /**
  * Value of the property in a {@link Thing}.
+ *
+ * @param <T> type of the property value
  */
-public record PropertyValue(String value) {
+public abstract class PropertyValue <T> {
+
+    /**
+     * value hold by this object
+     */
+    protected final T value;
 
     /**
      * Creates a new instance.
@@ -17,18 +24,50 @@ public record PropertyValue(String value) {
      * @param value new value
      * @throws NullPointerException if the value provided is null
      */
-    public PropertyValue(@NonNull String value) {
+    protected PropertyValue(@NonNull T value) {
         this.value = requireNonNull(value);
     }
 
     /**
-     * A convenience method to create a new instance. Can be statically imported.
+     * Returns the value hold.
      *
-     * @param value new value
-     * @return new instance
-     * @throws NullPointerException if the value provided is null
+     * @return value hold
      */
-    public static PropertyValue propertyValue(@NonNull String value) {
-        return new PropertyValue(value);
+    public T value() {
+        return value;
+    }
+
+    /**
+     * Converts the value hold to {@link String} and returns it.
+     * Conversion is made using `String.valueOf(value());`
+     *
+     * @return String representation of the value
+     */
+    public String valueAsString() {
+        return String.valueOf(value());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        var that = (PropertyValue<?>) o;
+        return Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return hash(value);
+    }
+
+    @Override
+    public String toString() {
+        return "PropertyValue{" +
+                "value=" + value +
+                '}';
     }
 }

@@ -1,5 +1,7 @@
 package mlesiewski.sillydb.predicate;
 
+import mlesiewski.sillydb.*;
+
 import java.util.regex.*;
 
 /**
@@ -11,20 +13,24 @@ public interface PropertySillyPredicateBuilder {
      * Creates a {@link StringEqualitySillyPredicate} instance and stores it.
      *
      * @param value pattern to use
+     * @param <T> type of the pattern to use
      * @return next part of the call chain
      */
-    SillyPredicateBuilder valueIsEqualTo(String value);
+    <T> SillyPredicateBuilder valueIsEqualTo(T value);
 
     /**
      * Creates a {@link Pattern} instance form the regexp provided and calls {@link PropertySillyPredicateBuilder#valueMatches(Pattern)}.
      *
      * @param regexp pattern to use
      * @return next part of the call chain
+     * @see PropertySillyPredicateBuilder#valueMatches(Pattern)
      */
     SillyPredicateBuilder valueMatches(String regexp);
 
     /**
      * Creates a {@link RegExpSillyPredicate} instance and stores it.
+     * {@link PropertyValue PropertyValues} will be tested by calling {@link PropertyValue#valueAsString()}.
+     * This means that even non-String values can be tested against without error.
      *
      * @param pattern pattern to use
      * @return next part of the call chain

@@ -17,26 +17,21 @@ class InMemoryNamedThing extends InMemoryThing implements NamedThing {
         this.name = name;
     }
 
-    private InMemoryNamedThing(Map<PropertyName, PropertyValue> properties, ThingName name) {
+    private InMemoryNamedThing(Map<PropertyName, PropertyValue<?>> properties, ThingName name) {
         super(properties);
         this.name = name;
     }
 
     @Override
-    public Single<Thing> setProperty(@NonNull PropertyName propertyName, @NonNull PropertyValue propertyValue) {
-        requireNonNull(propertyName);
-        requireNonNull(propertyValue);
-        var temp = properties();
-        temp.put(propertyName, propertyValue);
+    public <T> @NonNull Single<Thing> setProperty(@NonNull PropertyName propertyName, @NonNull PropertyValue<T> propertyValue) {
+        var temp = newMapWithValue(propertyName, propertyValue);
         final var newThing = new InMemoryNamedThing(temp, name());
         return Single.just(newThing);
     }
 
     @Override
-    public Single<Thing> removeProperty(@NonNull PropertyName name) {
-        requireNonNull(name);
-        var temp = properties();
-        temp.remove(name);
+    public @NonNull Single<Thing> removeProperty(@NonNull PropertyName name) {
+        var temp = newMapWithoutValue(name);
         final var newThing = new InMemoryNamedThing(temp, name());
         return Single.just(newThing);
     }

@@ -28,7 +28,7 @@ public class RegExpSillyPredicate implements SillyPredicate {
     @Override
     public boolean test(NamedThing thing) {
         return thing.getProperty(propertyName)
-                .map(p -> pattern.matcher(p.value()).matches())
+                .map(p -> pattern.matcher(p.valueAsString()).matches())
                 .defaultIfEmpty(FALSE)
                 .blockingGet();
     }

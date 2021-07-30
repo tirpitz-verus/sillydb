@@ -12,7 +12,7 @@ import static java.util.Objects.*;
 
 class InMemoryThing implements Thing {
 
-    private final Map<PropertyName, PropertyValue> properties;
+    private final Map<PropertyName, PropertyValue<?>> properties;
 
     InMemoryThing(Thing thing) {
         this(thing.properties());
@@ -22,22 +22,27 @@ class InMemoryThing implements Thing {
         this(emptyMap());
     }
 
-    protected InMemoryThing(Map<PropertyName, PropertyValue> properties) {
+    protected InMemoryThing(Map<PropertyName, PropertyValue<?>> properties) {
         this.properties = unmodifiableMap(properties);
     }
 
     @Override
-    public Single<Thing> setProperty(@NonNull PropertyName propertyName, @NonNull PropertyValue propertyValue) {
-        requireNonNull(propertyName);
-        requireNonNull(propertyValue);
-        var temp = new HashMap<>(properties);
-        temp.put(propertyName, propertyValue);
+    public <T> @NonNull Single<Thing> setProperty(@NonNull PropertyName propertyName, @NonNull PropertyValue<T> propertyValue) {
+        var temp = newMapWithValue(propertyName, propertyValue);
         final var newThing = new InMemoryThing(temp);
         return Single.just(newThing);
     }
 
+    protected  <T> HashMap<PropertyName, PropertyValue<?>> newMapWithValue(PropertyName propertyName, PropertyValue<T> propertyValue) {
+        requireNonNull(propertyName);
+        requireNonNull(propertyValue);
+        var temp = new HashMap<>(properties);
+        temp.put(propertyName, propertyValue);
+        return temp;
+    }
+
     @Override
-    public Maybe<PropertyValue> getProperty(PropertyName name) {
+    public @NonNull Maybe<PropertyValue<?>> getProperty(@NonNull PropertyName name) {
         requireNonNull(name);
         if (properties.containsKey(name)) {
             return getExistingProperty(name);
@@ -46,23 +51,28 @@ class InMemoryThing implements Thing {
         }
     }
 
-    private Maybe<PropertyValue> getExistingProperty(PropertyName name) {
+    private Maybe<PropertyValue<?>> getExistingProperty(PropertyName name) {
         var property = properties.get(name);
         return Maybe.just(property);
     }
 
     @Override
-    public Map<PropertyName, PropertyValue> properties() {
+    public @NonNull Map<PropertyName, PropertyValue<?>> properties() {
         return new HashMap<>(properties);
     }
 
     @Override
-    public Single<Thing> removeProperty(@NonNull PropertyName name) {
+    public @NonNull Single<Thing> removeProperty(@NonNull PropertyName name) {
+        var temp = newMapWithoutValue(name);
+        var newThing = new InMemoryThing(temp);
+        return Single.just(newThing);
+    }
+
+    protected HashMap<PropertyName, PropertyValue<?>> newMapWithoutValue(PropertyName name) {
         requireNonNull(name);
         var temp = new HashMap<>(properties);
         temp.remove(name);
-        var newThing = new InMemoryThing(temp);
-        return Single.just(newThing);
+        return temp;
     }
 
     @Override
