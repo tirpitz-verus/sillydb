@@ -17,12 +17,13 @@ jobs:
       - name: grant execute permission for gradlew
         run: chmod +x gradlew
       - name: upload packages
+        id: gradle-upload
         run: chmod +x gradlew && ./gradlew publish
         continue-on-error: true
         env:
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: remove oldest version
-        if: ${{ success() }}
+        if: steps.gradle-upload.outcome == 'success'
         uses: actions/delete-package-versions@v1
         with:
           package-name: mlesiewski.sillydb
