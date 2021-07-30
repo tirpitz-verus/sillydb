@@ -7,7 +7,7 @@ public interface PropertyBuilder extends GenericBuilder {
 
     PropertyBuilder withProperty(PropertyName name, String value);
 
-    PropertyBuilder withProperty(PropertyName name, Boolean value);
+    PropertyBuilder withProperty(PropertyName name, boolean value);
 
     <T> PropertyBuilder withProperty(PropertyName name, PropertyValue<T> value);
     ThingWithCategory getThing();
