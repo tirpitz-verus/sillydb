@@ -3,6 +3,8 @@ package mlesiewski.sillydb.testinfrastructure.testdatabuilder;
 import mlesiewski.sillydb.*;
 import mlesiewski.sillydb.propertyvalue.*;
 
+import java.math.*;
+
 public class TestDataBuilder implements GenericBuilder, PropertyBuilder {
 
     private final SillyDb db;
@@ -77,6 +79,12 @@ public class TestDataBuilder implements GenericBuilder, PropertyBuilder {
     @Override
     public PropertyBuilder withProperty(PropertyName name, boolean value) {
         var propertyValue = new BooleanPropertyValue(value);
+        return withProperty(name, propertyValue);
+    }
+
+    @Override
+    public PropertyBuilder withProperty(PropertyName name, BigDecimal value) {
+        var propertyValue = new BigDecimalPropertyValue(value);
         return withProperty(name, propertyValue);
     }
 

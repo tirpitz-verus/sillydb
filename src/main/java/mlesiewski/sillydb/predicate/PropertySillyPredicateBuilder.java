@@ -2,6 +2,7 @@ package mlesiewski.sillydb.predicate;
 
 import mlesiewski.sillydb.propertyvalue.*;
 
+import java.math.*;
 import java.util.regex.*;
 
 /**
@@ -42,6 +43,12 @@ public interface PropertySillyPredicateBuilder {
      *
      * @return next part of the call chain
      */
-
     SillyPredicateBuilder exists();
+
+    /**
+     *
+     * @param threshold
+     * @return
+     */
+    SillyPredicateBuilder valueIsGraterThan(BigDecimal threshold);
 }

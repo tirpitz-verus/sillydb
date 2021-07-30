@@ -6,6 +6,9 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
 import org.junit.jupiter.params.provider.*;
 
+import java.math.*;
+
+import static mlesiewski.sillydb.propertyvalue.BigDecimalPropertyValue.*;
 import static mlesiewski.sillydb.propertyvalue.BooleanPropertyValue.*;
 import static mlesiewski.sillydb.CategoryName.*;
 import static mlesiewski.sillydb.PropertyName.*;
@@ -74,6 +77,37 @@ class PropertyValueTypesTest {
                 .flatMap(t -> t.getProperty(isSweet))
                 .test()
                 .assertValue(v -> propertyHasType(v, BooleanPropertyValue.class))
+                .assertComplete()
+                .dispose();
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("BigDecimal property value type is retained")
+    @ArgumentsSource(AllDbTypes.class)
+    void aBigDecimal(SillyDb sillyDb) {
+        // given
+        var thingWithCategory = using(sillyDb)
+                .withCategory(SWEETS)
+                .withThing()
+                .getThing();
+        var sweets = thingWithCategory.category;
+        var thing = thingWithCategory.thing;
+        var thingName = thing.name();
+
+        // when
+        var weight = propertyName("weight");
+        var oneOFive = bigDecimalPropertyValue(BigDecimal.valueOf(1.05));
+        thing.setProperty(weight, oneOFive)
+                .flatMap(sweets::put)
+                .test()
+                .assertComplete()
+                .dispose();
+
+        // then
+        sweets.findBy(thingName)
+                .flatMap(t -> t.getProperty(weight))
+                .test()
+                .assertValue(v -> propertyHasType(v, BigDecimalPropertyValue.class))
                 .assertComplete()
                 .dispose();
     }

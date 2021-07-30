@@ -11,7 +11,7 @@ import static mlesiewski.sillydb.PropertyName.*;
 import static mlesiewski.sillydb.predicate.SillyPredicateBuilder.*;
 import static mlesiewski.sillydb.testinfrastructure.testdatabuilder.TestDataBuilder.*;
 
-class PredicateTest {
+class GenericPredicateTest {
 
     static final PropertyName TASTE = propertyName("taste");
     static final PropertyName COLOR = propertyName("color");
