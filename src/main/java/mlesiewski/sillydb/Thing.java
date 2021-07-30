@@ -15,14 +15,15 @@ import java.util.*;
 public interface Thing {
 
     /**
-     * Creates a new thing that has all of the properties of this thing plus the new one.
+     * Creates a new thing that has all the properties of this thing plus the new one.
      *
      * @param name name of the property
      * @param propertyValue value of the property
+     * @param <T> type of the property value
      * @return a new thing wit the property required
      * @throws NullPointerException if name or value are null
      */
-    Single<Thing> setProperty(@NonNull PropertyName name, @NonNull PropertyValue propertyValue);
+    <T> @NonNull Single<Thing> setProperty(@NonNull PropertyName name, @NonNull PropertyValue<T> propertyValue);
 
     /**
      * Used to retrieve a value of a property.
@@ -31,7 +32,7 @@ public interface Thing {
      * @return maybe a value of the property
      * @throws NullPointerException if the name is null
      */
-    Maybe<PropertyValue> getProperty(@NonNull PropertyName name);
+    @NonNull Maybe<PropertyValue<?>> getProperty(@NonNull PropertyName name);
 
     /**
      * Creates a new thing with all the properties of this thing minus the one indicated.
@@ -40,12 +41,12 @@ public interface Thing {
      * @return a new thing without the property specified
      * @throws NullPointerException if the name is null
      */
-    Single<Thing> removeProperty(@NonNull PropertyName name);
+    @NonNull Single<Thing> removeProperty(@NonNull PropertyName name);
 
     /**
      * Returns a copy of the internal property map.
      *
      * @return a copy of the internal property map
      */
-    Map<PropertyName, PropertyValue> properties();
+    @NonNull Map<PropertyName, PropertyValue<?>> properties();
 }

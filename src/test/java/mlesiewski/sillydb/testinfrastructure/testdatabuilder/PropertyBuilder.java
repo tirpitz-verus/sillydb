@@ -5,6 +5,6 @@ import mlesiewski.sillydb.*;
 public interface PropertyBuilder extends GenericBuilder {
 
     PropertyBuilder withProperty(PropertyName name, String stringValue);
-    PropertyBuilder withProperty(PropertyName name, PropertyValue value);
+    <T> PropertyBuilder withProperty(PropertyName name, PropertyValue<T> value);
     ThingWithCategory getThing();
 }

@@ -5,12 +5,12 @@ import mlesiewski.sillydb.*;
 import static java.lang.Boolean.*;
 import static java.util.Objects.*;
 
-class StringEqualitySillyPredicate implements SillyPredicate {
+class StringEqualitySillyPredicate <T> implements SillyPredicate {
 
     private final PropertyName propertyName;
-    private final String value;
+    private final T value;
 
-    StringEqualitySillyPredicate(PropertyName propertyName, String value) {
+    StringEqualitySillyPredicate(PropertyName propertyName, T value) {
         this.propertyName = requireNonNull(propertyName);
         this.value = requireNonNull(value);
     }

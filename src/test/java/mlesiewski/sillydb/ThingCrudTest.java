@@ -10,7 +10,7 @@ import org.junit.jupiter.params.provider.*;
 import java.util.*;
 
 import static mlesiewski.sillydb.PropertyName.*;
-import static mlesiewski.sillydb.PropertyValue.*;
+import static mlesiewski.sillydb.StringPropertyValue.*;
 import static mlesiewski.sillydb.testinfrastructure.testdatabuilder.TestDataBuilder.*;
 
 @DisplayName("thing")
@@ -19,8 +19,8 @@ class ThingCrudTest {
 
     static final CategoryName CATEGORY_NAME = new CategoryName("pets");
     public static final PropertyName TASTE = propertyName("taste");
-    public static final PropertyValue SWEET = propertyValue("sweet");
-    public static final PropertyValue SOUR = propertyValue("sour");
+    public static final PropertyValue<String> SWEET = stringPropertyValue("sweet");
+    public static final PropertyValue<String> SOUR = stringPropertyValue("sour");
 
     @ParameterizedTest(name = "{0}")
     @DisplayName("when saved it gets a name")
