@@ -1,4 +1,4 @@
-name: after merge upload
+name: after main merge
 
 on:
   push:
@@ -12,16 +12,23 @@ jobs:
         uses: AdoptOpenJDK/install-jdk@v1
         with:
           version: '16'
+
       - name: checkout code
         uses: actions/checkout@v2
+
       - name: grant execute permission for gradlew
         run: chmod +x gradlew
-      - name: upload packages
+
+      - name: build with Gradle
+        run: ./gradlew build
+
+      - name: upload packages with Gradle
         id: gradle-upload
-        run: chmod +x gradlew && ./gradlew publish
+        run: ./gradlew publish
         continue-on-error: true
         env:
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: remove oldest version
         if: steps.gradle-upload.outcome == 'success'
         uses: actions/delete-package-versions@v1

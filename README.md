@@ -1,4 +1,4 @@
-![badge for check_main_branch](https://github.com/tirpitz-verus/sillydb/actions/workflows/check_main_branch.yml/badge.svg)
+![badge for check_main_branch](https://github.com/tirpitz-verus/sillydb/actions/workflows/after_main_merge.yml/badge.svg)
 
 # sillydb
 a silly db in java for lulz
