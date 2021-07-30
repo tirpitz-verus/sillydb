@@ -75,7 +75,7 @@ public class TestDataBuilder implements GenericBuilder, PropertyBuilder {
     }
 
     @Override
-    public PropertyBuilder withProperty(PropertyName name, Boolean value) {
+    public PropertyBuilder withProperty(PropertyName name, boolean value) {
         var propertyValue = new BooleanPropertyValue(value);
         return withProperty(name, propertyValue);
     }
