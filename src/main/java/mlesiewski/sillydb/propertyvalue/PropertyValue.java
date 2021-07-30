@@ -67,7 +67,7 @@ public abstract class PropertyValue <T> {
 
     @Override
     public String toString() {
-        return "PropertyValue{" +
+        return getClass().getSimpleName() + "{" +
                 "value=" + value +
                 '}';
     }
