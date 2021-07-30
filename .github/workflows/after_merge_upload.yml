@@ -18,6 +18,8 @@ jobs:
         run: chmod +x gradlew
       - name: upload packages
         run: chmod +x gradlew && ./gradlew publish
+        with:
+          continue-on-error: true
         env:
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: remove oldest version
