@@ -1,6 +1,7 @@
 package mlesiewski.sillydb.testinfrastructure.testdatabuilder;
 
 import mlesiewski.sillydb.*;
+import mlesiewski.sillydb.propertyvalue.*;
 
 public class TestDataBuilder implements GenericBuilder, PropertyBuilder {
 
@@ -70,6 +71,12 @@ public class TestDataBuilder implements GenericBuilder, PropertyBuilder {
     @Override
     public PropertyBuilder withProperty(PropertyName name, String value) {
         var propertyValue = new StringPropertyValue(value);
+        return withProperty(name, propertyValue);
+    }
+
+    @Override
+    public PropertyBuilder withProperty(PropertyName name, Boolean value) {
+        var propertyValue = new BooleanPropertyValue(value);
         return withProperty(name, propertyValue);
     }
 

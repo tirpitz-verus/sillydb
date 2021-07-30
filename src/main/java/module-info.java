@@ -6,6 +6,7 @@ module sillydb.main {
     exports mlesiewski.sillydb;
     exports mlesiewski.sillydb.builder;
     exports mlesiewski.sillydb.predicate;
+    exports mlesiewski.sillydb.propertyvalue;
 
     requires org.slf4j;
     requires io.reactivex.rxjava3;

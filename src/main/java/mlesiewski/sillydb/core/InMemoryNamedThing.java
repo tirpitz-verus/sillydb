@@ -3,10 +3,9 @@ package mlesiewski.sillydb.core;
 import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.*;
 import mlesiewski.sillydb.*;
+import mlesiewski.sillydb.propertyvalue.*;
 
 import java.util.*;
-
-import static java.util.Objects.*;
 
 class InMemoryNamedThing extends InMemoryThing implements NamedThing {
 
