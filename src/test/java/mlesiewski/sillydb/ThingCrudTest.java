@@ -1,5 +1,6 @@
 package mlesiewski.sillydb;
 
+import mlesiewski.sillydb.propertyvalue.*;
 import mlesiewski.sillydb.testinfrastructure.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.DisplayName;
@@ -10,7 +11,7 @@ import org.junit.jupiter.params.provider.*;
 import java.util.*;
 
 import static mlesiewski.sillydb.PropertyName.*;
-import static mlesiewski.sillydb.StringPropertyValue.*;
+import static mlesiewski.sillydb.propertyvalue.StringPropertyValue.*;
 import static mlesiewski.sillydb.testinfrastructure.testdatabuilder.TestDataBuilder.*;
 
 @DisplayName("thing")

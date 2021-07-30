@@ -1,6 +1,7 @@
-package mlesiewski.sillydb;
+package mlesiewski.sillydb.propertyvalue;
 
 import io.reactivex.rxjava3.annotations.*;
+import mlesiewski.sillydb.*;
 
 /**
  * String value of the property in a {@link Thing}.

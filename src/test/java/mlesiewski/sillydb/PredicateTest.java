@@ -1,5 +1,6 @@
 package mlesiewski.sillydb;
 
+import mlesiewski.sillydb.propertyvalue.*;
 import mlesiewski.sillydb.testinfrastructure.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
@@ -17,7 +18,7 @@ class PredicateTest {
     static final CategoryName SWEETS = categoryName("sweets");
     static final String SWEET = "sweet";
     static final String SOUR = "sour";
-    public static final String RED = "red";
+    static final String RED = "red";
 
     @ParameterizedTest(name = "{0}")
     @DisplayName("can find things by string equality")
@@ -41,6 +42,33 @@ class PredicateTest {
 
         // then
                 .assertValue(v -> propertyHasValue(v, TASTE, SWEET))
+                .assertComplete()
+                .cancel();
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("can find things by boolean equality")
+    @ArgumentsSource(AllDbTypes.class)
+    void canFindThingsByBooleanEquality(SillyDb sillyDb) {
+        // given
+        var isSweet = propertyName("isSweet");
+        var sweets = using(sillyDb)
+                .withCategory(SWEETS)
+                .withThing()
+                .withProperty(isSweet, true)
+                .withThing()
+                .withProperty(isSweet, false)
+                .getCategory();
+
+        // when
+        var predicate = predicateWhere()
+                .property(isSweet)
+                .valueIsEqualTo(true)
+                .build();
+        sweets.findAllBy(predicate).test()
+
+        // then
+                .assertValue(v -> propertyHasValue(v, isSweet, true))
                 .assertComplete()
                 .cancel();
     }
@@ -124,7 +152,7 @@ class PredicateTest {
                 .build();
         sweets.findAllBy(predicate).test()
 
-                // then
+        // then
                 .assertValueCount(2)
                 .assertValueAt(0, v -> propertyHasValue(v, TASTE, SWEET))
                 .assertValueAt(1, v -> propertyHasValue(v, TASTE, SOUR) && propertyHasValue(v, COLOR, RED) )
@@ -152,7 +180,7 @@ class PredicateTest {
                 .build();
         sweets.findAllBy(predicate).test()
 
-                // then
+        // then
                 .assertValue(v -> propertyHasValue(v, TASTE, SOUR))
                 .assertComplete()
                 .cancel();
@@ -160,5 +188,9 @@ class PredicateTest {
 
     private boolean propertyHasValue(Thing thing, PropertyName name, String value) {
         return value.equals(thing.getProperty(name).map(PropertyValue::value).blockingGet());
+    }
+
+    private boolean propertyHasValue(Thing thing, PropertyName name, boolean value) {
+        return value == (boolean) thing.getProperty(name).map(PropertyValue::value).blockingGet();
     }
 }

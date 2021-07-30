@@ -1,6 +1,6 @@
 package mlesiewski.sillydb.predicate;
 
-import mlesiewski.sillydb.*;
+import mlesiewski.sillydb.propertyvalue.*;
 
 import java.util.regex.*;
 

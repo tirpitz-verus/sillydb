@@ -12,7 +12,7 @@ a silly db in java for lulz
   * 0.5 - **find by multiple predicates**
   * 0.6 - **find by predicate negation**
   * 0.7 - **property types (generify property values, StringPropertyValue)**
-  * 0.8 - Boolean properties
+  * 0.8 - **Boolean properties**
   * 0.9 - BigDecimal properties (greater/lower predicates)
   * 0.10 - ZonedDateTime properties (greater/lower predicates)
 * 2.0 - File save/load
