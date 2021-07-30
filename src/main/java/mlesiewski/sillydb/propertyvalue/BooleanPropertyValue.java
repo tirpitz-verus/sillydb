@@ -1,6 +1,5 @@
 package mlesiewski.sillydb.propertyvalue;
 
-import io.reactivex.rxjava3.annotations.*;
 import mlesiewski.sillydb.*;
 
 /**
@@ -11,7 +10,7 @@ public class BooleanPropertyValue extends  PropertyValue<Boolean> {
     /**
      * {@inheritDoc}
      */
-    public BooleanPropertyValue(@NonNull Boolean value) {
+    public BooleanPropertyValue(boolean value) {
         super(value);
     }
 
@@ -20,9 +19,8 @@ public class BooleanPropertyValue extends  PropertyValue<Boolean> {
      *
      * @param value new value
      * @return new instance
-     * @throws NullPointerException if the value provided is null
      */
-    public static BooleanPropertyValue booleanPropertyValue(@NonNull Boolean value) {
+    public static BooleanPropertyValue booleanPropertyValue(boolean value) {
         return new BooleanPropertyValue(value);
     }
 }
