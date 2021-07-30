@@ -35,4 +35,13 @@ public interface SillyPredicate {
     default SillyPredicate or(SillyPredicate secondPredicate) {
         return new OrSillyPredicate(this, secondPredicate);
     }
+
+    /**
+     * Negates this predicate.
+     *
+     * @return new predicate that negates this predicate
+     */
+    default SillyPredicate not() {
+        return new NotSillyPredicate(this);
+    }
 }
