@@ -46,9 +46,38 @@ public interface PropertySillyPredicateBuilder {
     SillyPredicateBuilder exists();
 
     /**
+     * Creates a {@link NumberGraterThanSillyPredicate} instance and stores it.
      *
-     * @param threshold
-     * @return
+     * @param threshold a threshold value to compare to
+     * @param <T> a number class
+     * @return next part of the call chain
      */
-    SillyPredicateBuilder valueIsGraterThan(BigDecimal threshold);
+    <T extends Number & Comparable<T>> SillyPredicateBuilder valueIsGraterThan(T threshold);
+
+    /**
+     * Creates a {@link NumberGraterOrEqualToSillyPredicate} instance and stores it.
+     *
+     * @param threshold a threshold value to compare to
+     * @param <T> a number class
+     * @return next part of the call chain
+     */
+    <T extends Number & Comparable<T>> SillyPredicateBuilder valueIsGraterThanOrEqualTo(T threshold);
+
+    /**
+     * Creates a {@link NumberLessThanSillyPredicate} instance and stores it.
+     *
+     * @param threshold a threshold value to compare to
+     * @param <T> a number class
+     * @return next part of the call chain
+     */
+    <T extends Number & Comparable<T>> SillyPredicateBuilder valueIsLessThan(T threshold);
+
+    /**
+     * Creates a {@link NumberLessOrEqualToSillyPredicate} instance and stores it.
+     *
+     * @param threshold a threshold value to compare to
+     * @param <T> a number class
+     * @return next part of the call chain
+     */
+    <T extends Number & Comparable<T>> SillyPredicateBuilder valueIsLessThanOrEqualTo(T threshold);
 }

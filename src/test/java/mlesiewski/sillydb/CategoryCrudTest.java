@@ -1,16 +1,19 @@
 package mlesiewski.sillydb;
 
+import mlesiewski.sillydb.propertyvalue.*;
 import mlesiewski.sillydb.testinfrastructure.*;
-import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.*;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
 import org.junit.jupiter.params.provider.*;
 
 import java.util.*;
 
+import static mlesiewski.sillydb.PropertyName.*;
+import static mlesiewski.sillydb.propertyvalue.StringPropertyValue.*;
 import static mlesiewski.sillydb.testinfrastructure.testdatabuilder.TestDataBuilder.*;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("category")
 @TestMethodOrder(OrderAnnotation.class)
@@ -25,6 +28,7 @@ class CategoryCrudTest {
         // when - creating category
         sillyDb.createCategory(CATEGORY_NAME)
                 .test()
+
         // then - value has a correct name
                 .assertValue(v -> v.name().equals(CATEGORY_NAME))
                 .assertNoErrors()
@@ -125,5 +129,30 @@ class CategoryCrudTest {
 
         // then
         assertThat(existsAfterCreation).isTrue();
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("will not allow to change a property type once it was set on one of the things")
+    @ArgumentsSource(AllDbTypes.class)
+    @Disabled("will be implemented in 0.13.0")
+    void guardPropertyType(SillyDb sillyDb) {
+        // given - a thing with some property
+        var likesCats = propertyName("likesCats");
+        var category = using(sillyDb)
+                .withCategory(CATEGORY_NAME)
+                .withThing()
+                .withProperty(likesCats, true)
+                .getCategory();
+
+        // when - creating a thing with the same property but a different value type
+        category.createNewThing()
+                .setProperty(likesCats, stringPropertyValue("false"))
+
+        // then
+                .test()
+//                .assertError(BadPropertyValueType.class)
+                .assertError(e -> e.getMessage().contains(StringPropertyValue.class.getSimpleName()))
+                .assertError(e -> e.getMessage().contains(BooleanPropertyValue.class.getSimpleName()))
+                .dispose();
     }
 }

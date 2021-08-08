@@ -1,5 +1,6 @@
 package mlesiewski.sillydb;
 
+import mlesiewski.sillydb.predicate.*;
 import mlesiewski.sillydb.propertyvalue.*;
 import mlesiewski.sillydb.testinfrastructure.*;
 import org.junit.jupiter.api.*;
@@ -92,9 +93,9 @@ class BigDecimalPredicateTest {
         sweets.findAllBy(predicate).test()
 
         // then
-                .assertError(BadSillyPredicateType.class)
+                .assertError(NumberComparingSillyPredicateUsedToTestNoNumericValue.class)
                 .assertError(e -> e.getMessage().contains("String"))
-                .assertError(e -> e.getMessage().contains(BigDecimalPredicate.class.getSimpleName()))
+                .assertError(e -> e.getMessage().contains(NumberComparingSillyPredicate.class.getSimpleName()))
                 .cancel();
     }
 
@@ -114,7 +115,7 @@ class BigDecimalPredicateTest {
         // when
         var predicate = predicateWhere()
                 .property(WEIGHT)
-                .valueIsGraterThanOrEqualtTo(ONE)
+                .valueIsGraterThanOrEqualTo(ONE)
                 .build();
         sweets.findAllBy(predicate).test()
 
@@ -143,9 +144,9 @@ class BigDecimalPredicateTest {
         sweets.findAllBy(predicate).test()
 
         // then
-                .assertError(BadSillyPredicateType.class)
+                .assertError(NumberComparingSillyPredicateUsedToTestNoNumericValue.class)
                 .assertError(e -> e.getMessage().contains("String"))
-                .assertError(e -> e.getMessage().contains(BigDecimalPredicate.class.getSimpleName()))
+                .assertError(e -> e.getMessage().contains(NumberComparingSillyPredicate.class.getSimpleName()))
                 .cancel();
     }
 
@@ -194,9 +195,9 @@ class BigDecimalPredicateTest {
         sweets.findAllBy(predicate).test()
 
         // then
-                .assertError(BadSillyPredicateType.class)
+                .assertError(NumberComparingSillyPredicateUsedToTestNoNumericValue.class)
                 .assertError(e -> e.getMessage().contains("String"))
-                .assertError(e -> e.getMessage().contains(BigDecimalPredicate.class.getSimpleName()))
+                .assertError(e -> e.getMessage().contains(NumberComparingSillyPredicate.class.getSimpleName()))
                 .cancel();
     }
 
@@ -207,8 +208,6 @@ class BigDecimalPredicateTest {
         // given
         var sweets = using(sillyDb)
                 .withCategory(SWEETS)
-                .withThing()
-                .withProperty(WEIGHT, ONE)
                 .withThing()
                 .withProperty(WEIGHT, TEN)
                 .getCategory();
@@ -245,9 +244,9 @@ class BigDecimalPredicateTest {
         sweets.findAllBy(predicate).test()
 
         // then
-                .assertError(BadSillyPredicateType.class)
+                .assertError(NumberComparingSillyPredicateUsedToTestNoNumericValue.class)
                 .assertError(e -> e.getMessage().contains("String"))
-                .assertError(e -> e.getMessage().contains(BigDecimalPredicate.class.getSimpleName()))
+                .assertError(e -> e.getMessage().contains(NumberComparingSillyPredicate.class.getSimpleName()))
                 .cancel();
     }
 
