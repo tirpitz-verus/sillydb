@@ -15,8 +15,8 @@ a silly db in java for lulz
 * 0.8 - **Boolean properties**
 * 0.9 - **BigDecimal properties (greater/lower predicates)**
 * 0.10 - **Long properties (greater/lower predicates)**
-* 0.11 - ZonedDateTime properties (before/after predicates)
-* 0.12 - ZonedDate properties (before/after (with 'now' variants) predicates, allow comparing to ZonedDateTime)
+* 0.11 - **ZonedDateTime properties (before/after (with 'now' variants) predicates)**
+* 0.12 - ZonedDate properties (before/after predicates)
 * 0.13 - guard against changing value type in a scope of a category
 * 0.14 - handle concurrent operations (optional long-running tests to be always executed by CI)
 * 0.15 - ordering by one field
