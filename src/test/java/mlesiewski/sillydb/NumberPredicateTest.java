@@ -15,7 +15,7 @@ import static mlesiewski.sillydb.PropertyName.*;
 import static mlesiewski.sillydb.predicate.SillyPredicateBuilder.*;
 import static mlesiewski.sillydb.testinfrastructure.testdatabuilder.TestDataBuilder.*;
 
-class BigDecimalPredicateTest {
+class NumberPredicateTest {
 
     static final CategoryName SWEETS = categoryName("sweets");
     static final PropertyName WEIGHT = propertyName("weight");
