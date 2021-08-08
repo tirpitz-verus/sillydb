@@ -8,7 +8,7 @@ import java.math.*;
 /**
  * BigDecimal value of the property in a {@link Thing}.
  */
-public class BigDecimalPropertyValue extends  PropertyValue<BigDecimal> {
+public class BigDecimalPropertyValue extends  NumericPropertyValue<BigDecimal> {
 
     /**
      * {@inheritDoc}

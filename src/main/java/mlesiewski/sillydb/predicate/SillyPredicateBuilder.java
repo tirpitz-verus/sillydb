@@ -2,6 +2,7 @@ package mlesiewski.sillydb.predicate;
 
 import mlesiewski.sillydb.*;
 
+import java.math.*;
 import java.util.function.*;
 import java.util.regex.*;
 
@@ -74,6 +75,30 @@ public final class SillyPredicateBuilder {
         @Override
         public SillyPredicateBuilder exists() {
             setCurrent(new PropertyExistenceSillyPredicate(propertyName));
+            return SillyPredicateBuilder.this;
+        }
+
+        @Override
+        public <T extends Number & Comparable<T>> SillyPredicateBuilder valueIsGraterThan(T threshold) {
+            setCurrent(new NumberGraterThanSillyPredicate(propertyName, threshold));
+            return SillyPredicateBuilder.this;
+        }
+
+        @Override
+        public <T extends Number & Comparable<T>> SillyPredicateBuilder valueIsGraterThanOrEqualTo(T threshold) {
+            setCurrent(new NumberGraterOrEqualToSillyPredicate(propertyName, threshold));
+            return SillyPredicateBuilder.this;
+        }
+
+        @Override
+        public <T extends Number & Comparable<T>> SillyPredicateBuilder valueIsLessThan(T threshold) {
+            setCurrent(new NumberLessThanSillyPredicate(propertyName, threshold));
+            return SillyPredicateBuilder.this;
+        }
+
+        @Override
+        public <T extends Number & Comparable<T>> SillyPredicateBuilder valueIsLessThanOrEqualTo(T threshold) {
+            setCurrent(new NumberLessOrEqualToSillyPredicate(propertyName, threshold));
             return SillyPredicateBuilder.this;
         }
 
