@@ -7,8 +7,6 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
 import org.junit.jupiter.params.provider.*;
 
-import java.math.*;
-
 import static java.math.BigDecimal.*;
 import static mlesiewski.sillydb.CategoryName.*;
 import static mlesiewski.sillydb.PropertyName.*;
@@ -94,7 +92,7 @@ class NumberPredicateTest {
 
         // then
                 .assertError(NumberComparingSillyPredicateUsedToTestNoNumericValue.class)
-                .assertError(e -> e.getMessage().contains("String"))
+                .assertError(e -> e.getMessage().contains(StringPropertyValue.class.getSimpleName()))
                 .assertError(e -> e.getMessage().contains(NumberComparingSillyPredicate.class.getSimpleName()))
                 .cancel();
     }
@@ -145,7 +143,7 @@ class NumberPredicateTest {
 
         // then
                 .assertError(NumberComparingSillyPredicateUsedToTestNoNumericValue.class)
-                .assertError(e -> e.getMessage().contains("String"))
+                .assertError(e -> e.getMessage().contains(StringPropertyValue.class.getSimpleName()))
                 .assertError(e -> e.getMessage().contains(NumberComparingSillyPredicate.class.getSimpleName()))
                 .cancel();
     }
@@ -196,7 +194,7 @@ class NumberPredicateTest {
 
         // then
                 .assertError(NumberComparingSillyPredicateUsedToTestNoNumericValue.class)
-                .assertError(e -> e.getMessage().contains("String"))
+                .assertError(e -> e.getMessage().contains(StringPropertyValue.class.getSimpleName()))
                 .assertError(e -> e.getMessage().contains(NumberComparingSillyPredicate.class.getSimpleName()))
                 .cancel();
     }
@@ -245,12 +243,36 @@ class NumberPredicateTest {
 
         // then
                 .assertError(NumberComparingSillyPredicateUsedToTestNoNumericValue.class)
-                .assertError(e -> e.getMessage().contains("String"))
+                .assertError(e -> e.getMessage().contains(StringPropertyValue.class.getSimpleName()))
                 .assertError(e -> e.getMessage().contains(NumberComparingSillyPredicate.class.getSimpleName()))
                 .cancel();
     }
 
-    private boolean propertyHasValue(Thing thing, PropertyName name, BigDecimal value) {
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("can compare long to BigDecimal using number predicate")
+    @ArgumentsSource(AllDbTypes.class)
+    void canCompareLongToBigDecimalUsingNumberPredicate(SillyDb sillyDb) {
+        // given
+        var sweets = using(sillyDb)
+                .withCategory(SWEETS)
+                .withThing()
+                .withProperty(WEIGHT, 10L)
+                .getCategory();
+
+        // when
+        var predicate = predicateWhere()
+                .property(WEIGHT)
+                .valueIsEqualTo(TEN)
+                .build();
+        sweets.findAllBy(predicate).test()
+
+        // then
+                .assertValue(v -> propertyHasValue(v, WEIGHT, 10L))
+                .assertComplete()
+                .cancel();
+    }
+
+    private boolean propertyHasValue(Thing thing, PropertyName name, Object value) {
         return value.equals(thing.getProperty(name).map(PropertyValue::value).blockingGet());
     }
 }

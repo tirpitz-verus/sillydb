@@ -106,7 +106,8 @@ class InMemoryCategory implements Category {
                     return;
                 }
                 var thing = entry.getValue();
-                if (predicate.test(thing)) {
+                var test = predicate.test(thing);
+                if (test) {
                     emitter.onNext(thing);
                 }
             }

@@ -13,6 +13,8 @@ public interface PropertyBuilder extends GenericBuilder {
 
     PropertyBuilder withProperty(PropertyName name, BigDecimal value);
 
+    PropertyBuilder withProperty(PropertyName name, long value);
+
     <T> PropertyBuilder withProperty(PropertyName name, PropertyValue<T> value);
 
     ThingWithCategory getThing();
