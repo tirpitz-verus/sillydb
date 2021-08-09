@@ -12,6 +12,7 @@ import java.util.*;
 
 import static mlesiewski.sillydb.PropertyName.*;
 import static mlesiewski.sillydb.propertyvalue.StringPropertyValue.*;
+import static mlesiewski.sillydb.testinfrastructure.TestPredicates.*;
 import static mlesiewski.sillydb.testinfrastructure.testdatabuilder.TestDataBuilder.*;
 import static org.assertj.core.api.Assertions.*;
 
@@ -25,6 +26,14 @@ class CategoryCrudTest {
     @DisplayName("can be created")
     @ArgumentsSource(AllDbTypes.class)
     void canCreateCategory(SillyDb sillyDb) {
+        // given no category of that name
+        if (sillyDb.categoryExists(CATEGORY_NAME)) {
+            sillyDb.deleteCategory(CATEGORY_NAME)
+                    .test()
+                    .assertComplete()
+                    .dispose();
+        }
+
         // when - creating category
         sillyDb.createCategory(CATEGORY_NAME)
                 .test()
@@ -134,7 +143,6 @@ class CategoryCrudTest {
     @ParameterizedTest(name = "{0}")
     @DisplayName("will not allow to change a property type once it was set on one of the things")
     @ArgumentsSource(AllDbTypes.class)
-    @Disabled("will be implemented in 0.12.0")
     void guardPropertyType(SillyDb sillyDb) {
         // given - a thing with some property
         var likesCats = propertyName("likesCats");
@@ -147,12 +155,13 @@ class CategoryCrudTest {
         // when - creating a thing with the same property but a different value type
         category.createNewThing()
                 .setProperty(likesCats, stringPropertyValue("false"))
+                .flatMap(category::put)
 
         // then
                 .test()
-//                .assertError(BadPropertyValueType.class)
-                .assertError(e -> e.getMessage().contains(StringPropertyValue.class.getSimpleName()))
-                .assertError(e -> e.getMessage().contains(BooleanPropertyValue.class.getSimpleName()))
+                .assertError(PropertyValueTypeChangeIsIllegal.class)
+                .assertError(errorMessageNamesClass(StringPropertyValue.class))
+                .assertError(errorMessageNamesClass(BooleanPropertyValue.class))
                 .dispose();
     }
 }

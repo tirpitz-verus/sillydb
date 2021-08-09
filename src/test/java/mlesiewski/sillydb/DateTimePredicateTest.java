@@ -22,9 +22,9 @@ class DateTimePredicateTest {
     static final PropertyName CREATED = propertyName("created");
     static final PropertyName TASTE = propertyName("taste");
     static final String SWEET = "sweet";
-    static final ZonedDateTime D2007_12_03_10_00_00 = dateTimeFromUtc("2007-12-03", "10:00:00");
-    static final ZonedDateTime D2008_05_17_18_00_00 = dateTimeFromUtc("2008-05-17", "18:00:00");
-    static final ZonedDateTime D2009_09_23_05_30_00 = dateTimeFromUtc("2009-09-23", "05:30:00");
+    static final ZonedDateTime Y_2007 = dateTimeFromUtc("2007-01-01", "00:00:00");
+    static final ZonedDateTime Y_2008 = dateTimeFromUtc("2008-01-01", "00:00:00");
+    static final ZonedDateTime Y_2009 = dateTimeFromUtc("2009-01-01", "00:00:00");
 
     @ParameterizedTest(name = "{0}")
     @DisplayName("can find things by ZonedDateTime equality")
@@ -34,20 +34,20 @@ class DateTimePredicateTest {
         var sweets = using(sillyDb)
                 .withCategory(SWEETS)
                 .withThing()
-                .withProperty(CREATED, D2007_12_03_10_00_00)
+                .withProperty(CREATED, Y_2007)
                 .withThing()
-                .withProperty(CREATED, D2008_05_17_18_00_00)
+                .withProperty(CREATED, Y_2008)
                 .getCategory();
 
         // when
         var predicate = predicateWhere()
                 .property(CREATED)
-                .valueIsEqualTo(D2007_12_03_10_00_00)
+                .valueIsEqualTo(Y_2007)
                 .build();
         sweets.findAllBy(predicate).test()
 
         // then
-                .assertValue(v -> propertyHasValue(v, CREATED, D2007_12_03_10_00_00))
+                .assertValue(v -> propertyHasValue(v, CREATED, Y_2007))
                 .assertComplete()
                 .cancel();
     }
@@ -60,20 +60,20 @@ class DateTimePredicateTest {
         var sweets = using(sillyDb)
                 .withCategory(SWEETS)
                 .withThing()
-                .withProperty(CREATED, D2007_12_03_10_00_00)
+                .withProperty(CREATED, Y_2007)
                 .withThing()
-                .withProperty(CREATED, D2009_09_23_05_30_00)
+                .withProperty(CREATED, Y_2009)
                 .getCategory();
 
         // when
         var predicate = predicateWhere()
                 .property(CREATED)
-                .valueIsAfter(D2008_05_17_18_00_00)
+                .valueIsAfter(Y_2008)
                 .build();
         sweets.findAllBy(predicate).test()
 
         // then
-                .assertValue(v -> propertyHasValue(v, CREATED, D2009_09_23_05_30_00))
+                .assertValue(v -> propertyHasValue(v, CREATED, Y_2009))
                 .assertComplete()
                 .cancel();
     }
@@ -92,14 +92,14 @@ class DateTimePredicateTest {
         // when
         var predicate = predicateWhere()
                 .property(TASTE)
-                .valueIsAfter(D2008_05_17_18_00_00)
+                .valueIsAfter(Y_2008)
                 .build();
         sweets.findAllBy(predicate).test()
 
         // then
                 .assertError(TemporalComparingSillyPredicateUsedToTestNonTemporalValue.class)
-                .assertError(errorNamesClass(StringPropertyValue.class))
-                .assertError(errorNamesClass(TemporalComparingSillyPredicate.class))
+                .assertError(errorMessageNamesClass(StringPropertyValue.class))
+                .assertError(errorMessageNamesClass(TemporalComparingSillyPredicate.class))
                 .cancel();
     }
 
@@ -111,20 +111,20 @@ class DateTimePredicateTest {
         var sweets = using(sillyDb)
                 .withCategory(SWEETS)
                 .withThing()
-                .withProperty(CREATED, D2007_12_03_10_00_00)
+                .withProperty(CREATED, Y_2007)
                 .withThing()
-                .withProperty(CREATED, D2009_09_23_05_30_00)
+                .withProperty(CREATED, Y_2009)
                 .getCategory();
 
         // when
         var predicate = predicateWhere()
                 .property(CREATED)
-                .valueIsAfterOrEqualTo(D2009_09_23_05_30_00)
+                .valueIsAfterOrEqualTo(Y_2009)
                 .build();
         sweets.findAllBy(predicate).test()
 
         // then
-                .assertValue(v -> propertyHasValue(v, CREATED, D2009_09_23_05_30_00))
+                .assertValue(v -> propertyHasValue(v, CREATED, Y_2009))
                 .assertComplete()
                 .cancel();
     }
@@ -143,14 +143,14 @@ class DateTimePredicateTest {
         // when
         var predicate = predicateWhere()
                 .property(TASTE)
-                .valueIsAfterOrEqualTo(D2007_12_03_10_00_00)
+                .valueIsAfterOrEqualTo(Y_2007)
                 .build();
         sweets.findAllBy(predicate).test()
 
         // then
                 .assertError(TemporalComparingSillyPredicateUsedToTestNonTemporalValue.class)
-                .assertError(errorNamesClass(StringPropertyValue.class))
-                .assertError(errorNamesClass(TemporalComparingSillyPredicate.class))
+                .assertError(errorMessageNamesClass(StringPropertyValue.class))
+                .assertError(errorMessageNamesClass(TemporalComparingSillyPredicate.class))
                 .cancel();
     }
 
@@ -162,20 +162,20 @@ class DateTimePredicateTest {
         var sweets = using(sillyDb)
                 .withCategory(SWEETS)
                 .withThing()
-                .withProperty(CREATED, D2007_12_03_10_00_00)
+                .withProperty(CREATED, Y_2007)
                 .withThing()
-                .withProperty(CREATED, D2009_09_23_05_30_00)
+                .withProperty(CREATED, Y_2009)
                 .getCategory();
 
         // when
         var predicate = predicateWhere()
                 .property(CREATED)
-                .valueIsBefore(D2008_05_17_18_00_00)
+                .valueIsBefore(Y_2008)
                 .build();
         sweets.findAllBy(predicate).test()
 
         // then
-                .assertValue(v -> propertyHasValue(v, CREATED, D2007_12_03_10_00_00))
+                .assertValue(v -> propertyHasValue(v, CREATED, Y_2007))
                 .assertComplete()
                 .cancel();
     }
@@ -194,14 +194,14 @@ class DateTimePredicateTest {
         // when
         var predicate = predicateWhere()
                 .property(TASTE)
-                .valueIsBefore(D2007_12_03_10_00_00)
+                .valueIsBefore(Y_2007)
                 .build();
         sweets.findAllBy(predicate).test()
 
         // then
                 .assertError(TemporalComparingSillyPredicateUsedToTestNonTemporalValue.class)
-                .assertError(errorNamesClass(StringPropertyValue.class))
-                .assertError(errorNamesClass(TemporalComparingSillyPredicate.class))
+                .assertError(errorMessageNamesClass(StringPropertyValue.class))
+                .assertError(errorMessageNamesClass(TemporalComparingSillyPredicate.class))
                 .cancel();
     }
 
@@ -213,20 +213,20 @@ class DateTimePredicateTest {
         var sweets = using(sillyDb)
                 .withCategory(SWEETS)
                 .withThing()
-                .withProperty(CREATED, D2007_12_03_10_00_00)
+                .withProperty(CREATED, Y_2007)
                 .withThing()
-                .withProperty(CREATED, D2009_09_23_05_30_00)
+                .withProperty(CREATED, Y_2009)
                 .getCategory();
 
         // when
         var predicate = predicateWhere()
                 .property(CREATED)
-                .valueIsBeforeOrEqualTo(D2007_12_03_10_00_00)
+                .valueIsBeforeOrEqualTo(Y_2007)
                 .build();
         sweets.findAllBy(predicate).test()
 
         // then
-                .assertValue(v -> propertyHasValue(v, CREATED, D2007_12_03_10_00_00))
+                .assertValue(v -> propertyHasValue(v, CREATED, Y_2007))
                 .assertComplete()
                 .cancel();
     }
@@ -245,14 +245,14 @@ class DateTimePredicateTest {
         // when
         var predicate = predicateWhere()
                 .property(TASTE)
-                .valueIsBeforeOrEqualTo(D2007_12_03_10_00_00)
+                .valueIsBeforeOrEqualTo(Y_2007)
                 .build();
         sweets.findAllBy(predicate).test()
 
         // then
                 .assertError(TemporalComparingSillyPredicateUsedToTestNonTemporalValue.class)
-                .assertError(errorNamesClass(StringPropertyValue.class))
-                .assertError(errorNamesClass(TemporalComparingSillyPredicate.class))
+                .assertError(errorMessageNamesClass(StringPropertyValue.class))
+                .assertError(errorMessageNamesClass(TemporalComparingSillyPredicate.class))
                 .cancel();
     }
 

@@ -10,7 +10,7 @@ public class TestPredicates {
         return value.equals(thing.getProperty(name).map(PropertyValue::value).blockingGet());
     }
 
-    public static Predicate<Throwable> errorNamesClass(Class<?> aClass) {
+    public static Predicate<Throwable> errorMessageNamesClass(Class<?> aClass) {
         return (throwable) -> throwable.getMessage().contains(aClass.getSimpleName());
     }
 }

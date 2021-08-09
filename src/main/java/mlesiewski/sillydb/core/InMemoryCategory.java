@@ -4,6 +4,7 @@ import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.*;
 import mlesiewski.sillydb.*;
 import mlesiewski.sillydb.predicate.*;
+import mlesiewski.sillydb.propertyvalue.*;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -16,12 +17,14 @@ class InMemoryCategory implements Category {
     private final CategoryName name;
     private final SillyDb db;
     private final Map<ThingName, NamedThing> things;
+    private final Map<PropertyName, Class<? extends PropertyValue>> valueTypes;
     private long thingCounter = 0;
 
     InMemoryCategory(CategoryName name, SillyDb db) {
         this.name = name;
         this.db = db;
-        things = new ConcurrentHashMap<>();
+        this.things = new ConcurrentHashMap<>();
+        this.valueTypes = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -36,12 +39,13 @@ class InMemoryCategory implements Category {
 
     @Override
     public Single<NamedThing> put(Thing thing) {
+        validPropertyTypes(thing);
         var namedThing = namedThingFrom(thing);
         things.put(namedThing.name(), namedThing);
         return Single.just(namedThing);
     }
 
-    private InMemoryNamedThing namedThingFrom(Thing thing) {
+    private NamedThing namedThingFrom(Thing thing) {
         if (thing instanceof InMemoryNamedThing namedThing) {
             return namedThing;
         } else {
@@ -53,6 +57,17 @@ class InMemoryCategory implements Category {
     private ThingName createThingName() {
         thingCounter++;
         return new ThingName(String.valueOf(thingCounter));
+    }
+
+    private void validPropertyTypes(Thing thing) {
+        thing.properties().forEach((propertyName, value) -> {
+            var newValueType = value.getClass();
+            var previous = valueTypes.getOrDefault(propertyName, newValueType);
+            if (!previous.equals(newValueType)) {
+                throw new PropertyValueTypeChangeIsIllegal(propertyName, previous, newValueType, this);
+            }
+            valueTypes.put(propertyName, newValueType);
+        });
     }
 
     @Override
