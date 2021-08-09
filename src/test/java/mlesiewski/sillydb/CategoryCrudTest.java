@@ -134,7 +134,7 @@ class CategoryCrudTest {
     @ParameterizedTest(name = "{0}")
     @DisplayName("will not allow to change a property type once it was set on one of the things")
     @ArgumentsSource(AllDbTypes.class)
-    @Disabled("will be implemented in 0.13.0")
+    @Disabled("will be implemented in 0.12.0")
     void guardPropertyType(SillyDb sillyDb) {
         // given - a thing with some property
         var likesCats = propertyName("likesCats");

@@ -4,6 +4,7 @@ import mlesiewski.sillydb.*;
 import mlesiewski.sillydb.propertyvalue.*;
 
 import java.math.*;
+import java.time.*;
 
 public class TestDataBuilder implements GenericBuilder, PropertyBuilder {
 
@@ -91,6 +92,12 @@ public class TestDataBuilder implements GenericBuilder, PropertyBuilder {
     @Override
     public PropertyBuilder withProperty(PropertyName name, long value) {
         var propertyValue = new LongPropertyValue(value);
+        return withProperty(name, propertyValue);
+    }
+
+    @Override
+    public PropertyBuilder withProperty(PropertyName name, ZonedDateTime value) {
+        var propertyValue = new ZonedDateTimePropertyValue(value);
         return withProperty(name, propertyValue);
     }
 
