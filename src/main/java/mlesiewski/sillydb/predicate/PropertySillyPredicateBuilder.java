@@ -2,7 +2,7 @@ package mlesiewski.sillydb.predicate;
 
 import mlesiewski.sillydb.propertyvalue.*;
 
-import java.math.*;
+import java.time.temporal.*;
 import java.util.regex.*;
 
 /**
@@ -80,4 +80,40 @@ public interface PropertySillyPredicateBuilder {
      * @return next part of the call chain
      */
     <T extends Number & Comparable<T>> SillyPredicateBuilder valueIsLessThanOrEqualTo(T threshold);
+
+    /**
+     * Creates a {@link TemporalIsAfterSillyPredicate} instance and stores it.
+     *
+     * @param threshold a threshold value to compare to
+     * @param <T> a temporal class
+     * @return next part of the call chain
+     */
+    <T extends Temporal> SillyPredicateBuilder valueIsAfter(T threshold);
+
+    /**
+     * Creates a {@link TemporalIsAfterOrEqualSillyPredicate} instance and stores it.
+     *
+     * @param threshold a threshold value to compare to
+     * @param <T> a temporal class
+     * @return next part of the call chain
+     */
+    <T extends Temporal> SillyPredicateBuilder valueIsAfterOrEqualTo(T threshold);
+
+    /**
+     * Creates a {@link TemporalIsBeforeSillyPredicate} instance and stores it.
+     *
+     * @param threshold a threshold value to compare to
+     * @param <T> a temporal class
+     * @return next part of the call chain
+     */
+    <T extends Temporal> SillyPredicateBuilder valueIsBefore(T threshold);
+
+    /**
+     * Creates a {@link TemporalIsBeforeOrEqualSillyPredicate} instance and stores it.
+     *
+     * @param threshold a threshold value to compare to
+     * @param <T> a temporal class
+     * @return next part of the call chain
+     */
+    <T extends Temporal> SillyPredicateBuilder valueIsBeforeOrEqualTo(T threshold);
 }

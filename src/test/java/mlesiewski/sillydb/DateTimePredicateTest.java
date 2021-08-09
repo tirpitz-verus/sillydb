@@ -7,76 +7,81 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
 import org.junit.jupiter.params.provider.*;
 
-import static java.math.BigDecimal.*;
+import java.time.*;
+
+import static java.util.Objects.*;
 import static mlesiewski.sillydb.CategoryName.*;
 import static mlesiewski.sillydb.PropertyName.*;
 import static mlesiewski.sillydb.predicate.SillyPredicateBuilder.*;
 import static mlesiewski.sillydb.testinfrastructure.TestPredicates.*;
 import static mlesiewski.sillydb.testinfrastructure.testdatabuilder.TestDataBuilder.*;
 
-class NumberPredicateTest {
+class DateTimePredicateTest {
 
     static final CategoryName SWEETS = categoryName("sweets");
-    static final PropertyName WEIGHT = propertyName("weight");
+    static final PropertyName CREATED = propertyName("created");
     static final PropertyName TASTE = propertyName("taste");
     static final String SWEET = "sweet";
+    static final ZonedDateTime D2007_12_03_10_00_00 = dateTimeFromUtc("2007-12-03", "10:00:00");
+    static final ZonedDateTime D2008_05_17_18_00_00 = dateTimeFromUtc("2008-05-17", "18:00:00");
+    static final ZonedDateTime D2009_09_23_05_30_00 = dateTimeFromUtc("2009-09-23", "05:30:00");
 
     @ParameterizedTest(name = "{0}")
-    @DisplayName("can find things by BigDecimal equality")
+    @DisplayName("can find things by ZonedDateTime equality")
     @ArgumentsSource(AllDbTypes.class)
-    void canFindThingsByBigDecimalEquality(SillyDb sillyDb) {
+    void canFindThingsByZonedDateTimeEquality(SillyDb sillyDb) {
         // given
         var sweets = using(sillyDb)
                 .withCategory(SWEETS)
                 .withThing()
-                .withProperty(WEIGHT, ONE)
+                .withProperty(CREATED, D2007_12_03_10_00_00)
                 .withThing()
-                .withProperty(WEIGHT, TEN)
+                .withProperty(CREATED, D2008_05_17_18_00_00)
                 .getCategory();
 
         // when
         var predicate = predicateWhere()
-                .property(WEIGHT)
-                .valueIsEqualTo(ONE)
+                .property(CREATED)
+                .valueIsEqualTo(D2007_12_03_10_00_00)
                 .build();
         sweets.findAllBy(predicate).test()
 
         // then
-                .assertValue(v -> propertyHasValue(v, WEIGHT, ONE))
+                .assertValue(v -> propertyHasValue(v, CREATED, D2007_12_03_10_00_00))
                 .assertComplete()
                 .cancel();
     }
 
     @ParameterizedTest(name = "{0}")
-    @DisplayName("can find things by BigDecimal grater than")
+    @DisplayName("can find things by ZonedDateTime after")
     @ArgumentsSource(AllDbTypes.class)
-    void canFindThingsByBigDecimalGraterThan(SillyDb sillyDb) {
+    void canFindThingsByZonedDateTimeAfter(SillyDb sillyDb) {
         // given
         var sweets = using(sillyDb)
                 .withCategory(SWEETS)
                 .withThing()
-                .withProperty(WEIGHT, ONE)
+                .withProperty(CREATED, D2007_12_03_10_00_00)
                 .withThing()
-                .withProperty(WEIGHT, ZERO)
+                .withProperty(CREATED, D2009_09_23_05_30_00)
                 .getCategory();
 
         // when
         var predicate = predicateWhere()
-                .property(WEIGHT)
-                .valueIsGraterThan(ZERO)
+                .property(CREATED)
+                .valueIsAfter(D2008_05_17_18_00_00)
                 .build();
         sweets.findAllBy(predicate).test()
 
         // then
-                .assertValue(v -> propertyHasValue(v, WEIGHT, ONE))
+                .assertValue(v -> propertyHasValue(v, CREATED, D2009_09_23_05_30_00))
                 .assertComplete()
                 .cancel();
     }
 
     @ParameterizedTest(name = "{0}")
-    @DisplayName("comparing by BigDecimal grater than with a non-numeric property value yields error")
+    @DisplayName("comparing by ZonedDateTime after with a non-numeric property value yields error")
     @ArgumentsSource(AllDbTypes.class)
-    void comparingByBigDecimalGraterThanWithNonNumericPropertyValueYieldsError(SillyDb sillyDb) {
+    void comparingByZonedDateTimeAfterWithNonTemporalPropertyValueYieldsError(SillyDb sillyDb) {
         // given
         var sweets = using(sillyDb)
                 .withCategory(SWEETS)
@@ -87,47 +92,47 @@ class NumberPredicateTest {
         // when
         var predicate = predicateWhere()
                 .property(TASTE)
-                .valueIsGraterThan(ZERO)
+                .valueIsAfter(D2008_05_17_18_00_00)
                 .build();
         sweets.findAllBy(predicate).test()
 
         // then
-                .assertError(NumberComparingSillyPredicateUsedToTestNonNumericValue.class)
+                .assertError(TemporalComparingSillyPredicateUsedToTestNonTemporalValue.class)
                 .assertError(errorNamesClass(StringPropertyValue.class))
-                .assertError(errorNamesClass(NumberComparingSillyPredicate.class))
+                .assertError(errorNamesClass(TemporalComparingSillyPredicate.class))
                 .cancel();
     }
 
     @ParameterizedTest(name = "{0}")
-    @DisplayName("can find things by BigDecimal grater than or equal to")
+    @DisplayName("can find things by ZonedDateTime after or equal to")
     @ArgumentsSource(AllDbTypes.class)
-    void canFindThingsByBigDecimalGraterThanOrEqualTo(SillyDb sillyDb) {
+    void canFindThingsByZonedDateTimeAfterOrEqualTo(SillyDb sillyDb) {
         // given
         var sweets = using(sillyDb)
                 .withCategory(SWEETS)
                 .withThing()
-                .withProperty(WEIGHT, ONE)
+                .withProperty(CREATED, D2007_12_03_10_00_00)
                 .withThing()
-                .withProperty(WEIGHT, ZERO)
+                .withProperty(CREATED, D2009_09_23_05_30_00)
                 .getCategory();
 
         // when
         var predicate = predicateWhere()
-                .property(WEIGHT)
-                .valueIsGraterThanOrEqualTo(ONE)
+                .property(CREATED)
+                .valueIsAfterOrEqualTo(D2009_09_23_05_30_00)
                 .build();
         sweets.findAllBy(predicate).test()
 
         // then
-                .assertValue(v -> propertyHasValue(v, WEIGHT, ONE))
+                .assertValue(v -> propertyHasValue(v, CREATED, D2009_09_23_05_30_00))
                 .assertComplete()
                 .cancel();
     }
 
     @ParameterizedTest(name = "{0}")
-    @DisplayName("comparing by BigDecimal grater than or equal to with a non-numeric property value yields error")
+    @DisplayName("comparing by ZonedDateTime after or equal to with a non-temporal property value yields error")
     @ArgumentsSource(AllDbTypes.class)
-    void comparingByBigDecimalGraterThanOrEqualToWithNonNumericPropertyValueYieldsError(SillyDb sillyDb) {
+    void comparingByZonedDateTimeAfterThanOrEqualToWithNonTemporalPropertyValueYieldsError(SillyDb sillyDb) {
         // given
         var sweets = using(sillyDb)
                 .withCategory(SWEETS)
@@ -138,47 +143,47 @@ class NumberPredicateTest {
         // when
         var predicate = predicateWhere()
                 .property(TASTE)
-                .valueIsGraterThanOrEqualTo(ZERO)
+                .valueIsAfterOrEqualTo(D2007_12_03_10_00_00)
                 .build();
         sweets.findAllBy(predicate).test()
 
         // then
-                .assertError(NumberComparingSillyPredicateUsedToTestNonNumericValue.class)
+                .assertError(TemporalComparingSillyPredicateUsedToTestNonTemporalValue.class)
                 .assertError(errorNamesClass(StringPropertyValue.class))
-                .assertError(errorNamesClass(NumberComparingSillyPredicate.class))
+                .assertError(errorNamesClass(TemporalComparingSillyPredicate.class))
                 .cancel();
     }
 
     @ParameterizedTest(name = "{0}")
-    @DisplayName("can find things by BigDecimal less than")
+    @DisplayName("can find things by ZonedDateTime before")
     @ArgumentsSource(AllDbTypes.class)
-    void canFindThingsByBigDecimalLessThan(SillyDb sillyDb) {
+    void canFindThingsByZonedDateTimeBefore(SillyDb sillyDb) {
         // given
         var sweets = using(sillyDb)
                 .withCategory(SWEETS)
                 .withThing()
-                .withProperty(WEIGHT, TEN)
+                .withProperty(CREATED, D2007_12_03_10_00_00)
                 .withThing()
-                .withProperty(WEIGHT, ONE)
+                .withProperty(CREATED, D2009_09_23_05_30_00)
                 .getCategory();
 
         // when
         var predicate = predicateWhere()
-                .property(WEIGHT)
-                .valueIsLessThan(TEN)
+                .property(CREATED)
+                .valueIsBefore(D2008_05_17_18_00_00)
                 .build();
         sweets.findAllBy(predicate).test()
 
         // then
-                .assertValue(v -> propertyHasValue(v, WEIGHT, ONE))
+                .assertValue(v -> propertyHasValue(v, CREATED, D2007_12_03_10_00_00))
                 .assertComplete()
                 .cancel();
     }
 
     @ParameterizedTest(name = "{0}")
-    @DisplayName("comparing by BigDecimal less than with a non-numeric property value yields error")
+    @DisplayName("comparing by ZonedDateTime before than with a non-temporal property value yields error")
     @ArgumentsSource(AllDbTypes.class)
-    void comparingByBigDecimalLessThanWithNonNumericPropertyValueYieldsError(SillyDb sillyDb) {
+    void comparingByZonedDateTimeBeforeThanWithNonTemporalPropertyValueYieldsError(SillyDb sillyDb) {
         // given
         var sweets = using(sillyDb)
                 .withCategory(SWEETS)
@@ -189,45 +194,47 @@ class NumberPredicateTest {
         // when
         var predicate = predicateWhere()
                 .property(TASTE)
-                .valueIsLessThan(ZERO)
+                .valueIsBefore(D2007_12_03_10_00_00)
                 .build();
         sweets.findAllBy(predicate).test()
 
         // then
-                .assertError(NumberComparingSillyPredicateUsedToTestNonNumericValue.class)
+                .assertError(TemporalComparingSillyPredicateUsedToTestNonTemporalValue.class)
                 .assertError(errorNamesClass(StringPropertyValue.class))
-                .assertError(errorNamesClass(NumberComparingSillyPredicate.class))
+                .assertError(errorNamesClass(TemporalComparingSillyPredicate.class))
                 .cancel();
     }
 
     @ParameterizedTest(name = "{0}")
-    @DisplayName("can find things by BigDecimal less than or equal to")
+    @DisplayName("can find things by ZonedDateTime before or equal to")
     @ArgumentsSource(AllDbTypes.class)
-    void canFindThingsByBigDecimalLessThanOrEqualTo(SillyDb sillyDb) {
+    void canFindThingsByZonedDateTimeBeforeThanOrEqualTo(SillyDb sillyDb) {
         // given
         var sweets = using(sillyDb)
                 .withCategory(SWEETS)
                 .withThing()
-                .withProperty(WEIGHT, TEN)
+                .withProperty(CREATED, D2007_12_03_10_00_00)
+                .withThing()
+                .withProperty(CREATED, D2009_09_23_05_30_00)
                 .getCategory();
 
         // when
         var predicate = predicateWhere()
-                .property(WEIGHT)
-                .valueIsLessThanOrEqualTo(TEN)
+                .property(CREATED)
+                .valueIsBeforeOrEqualTo(D2007_12_03_10_00_00)
                 .build();
         sweets.findAllBy(predicate).test()
 
         // then
-                .assertValue(v -> propertyHasValue(v, WEIGHT, TEN))
+                .assertValue(v -> propertyHasValue(v, CREATED, D2007_12_03_10_00_00))
                 .assertComplete()
                 .cancel();
     }
 
     @ParameterizedTest(name = "{0}")
-    @DisplayName("comparing by BigDecimal less than or equal to with a non-numeric property value yields error")
+    @DisplayName("comparing by ZonedDateTime before or equal to with a non-temporal property value yields error")
     @ArgumentsSource(AllDbTypes.class)
-    void comparingByBigDecimalLessThanOrEqualToWithNonNumericPropertyValueYieldsError(SillyDb sillyDb) {
+    void comparingByZonedDateTimeBeforeOrEqualToWithNonTemporalPropertyValueYieldsError(SillyDb sillyDb) {
         // given
         var sweets = using(sillyDb)
                 .withCategory(SWEETS)
@@ -238,38 +245,18 @@ class NumberPredicateTest {
         // when
         var predicate = predicateWhere()
                 .property(TASTE)
-                .valueIsLessThanOrEqualTo(ZERO)
+                .valueIsBeforeOrEqualTo(D2007_12_03_10_00_00)
                 .build();
         sweets.findAllBy(predicate).test()
 
         // then
-                .assertError(NumberComparingSillyPredicateUsedToTestNonNumericValue.class)
+                .assertError(TemporalComparingSillyPredicateUsedToTestNonTemporalValue.class)
                 .assertError(errorNamesClass(StringPropertyValue.class))
-                .assertError(errorNamesClass(NumberComparingSillyPredicate.class))
+                .assertError(errorNamesClass(TemporalComparingSillyPredicate.class))
                 .cancel();
     }
 
-    @ParameterizedTest(name = "{0}")
-    @DisplayName("can compare long to BigDecimal using number predicate")
-    @ArgumentsSource(AllDbTypes.class)
-    void canCompareLongToBigDecimalUsingNumberPredicate(SillyDb sillyDb) {
-        // given
-        var sweets = using(sillyDb)
-                .withCategory(SWEETS)
-                .withThing()
-                .withProperty(WEIGHT, 10L)
-                .getCategory();
-
-        // when
-        var predicate = predicateWhere()
-                .property(WEIGHT)
-                .valueIsEqualTo(TEN)
-                .build();
-        sweets.findAllBy(predicate).test()
-
-        // then
-                .assertValue(v -> propertyHasValue(v, WEIGHT, 10L))
-                .assertComplete()
-                .cancel();
+    private static ZonedDateTime dateTimeFromUtc(String utcDate, String utcTime) {
+        return ZonedDateTime.parse(requireNonNull(utcDate) + "T" + requireNonNull(utcTime) + "Z");
     }
 }

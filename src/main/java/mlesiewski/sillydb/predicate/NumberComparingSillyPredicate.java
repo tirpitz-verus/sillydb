@@ -38,7 +38,7 @@ public abstract class NumberComparingSillyPredicate implements SillyPredicate {
             var compareResult = bigDecimal.compareTo(threshold);
             return test(compareResult);
         } else {
-            throw new NumberComparingSillyPredicateUsedToTestNoNumericValue(property.getClass());
+            throw new NumberComparingSillyPredicateUsedToTestNonNumericValue(property.getClass());
         }
     }
 

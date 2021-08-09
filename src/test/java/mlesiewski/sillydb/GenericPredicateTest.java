@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.*;
 import static mlesiewski.sillydb.CategoryName.*;
 import static mlesiewski.sillydb.PropertyName.*;
 import static mlesiewski.sillydb.predicate.SillyPredicateBuilder.*;
+import static mlesiewski.sillydb.testinfrastructure.TestPredicates.*;
 import static mlesiewski.sillydb.testinfrastructure.testdatabuilder.TestDataBuilder.*;
 
 class GenericPredicateTest {
@@ -184,13 +185,5 @@ class GenericPredicateTest {
                 .assertValue(v -> propertyHasValue(v, TASTE, SOUR))
                 .assertComplete()
                 .cancel();
-    }
-
-    private boolean propertyHasValue(Thing thing, PropertyName name, String value) {
-        return value.equals(thing.getProperty(name).map(PropertyValue::value).blockingGet());
-    }
-
-    private boolean propertyHasValue(Thing thing, PropertyName name, boolean value) {
-        return value == (boolean) thing.getProperty(name).map(PropertyValue::value).blockingGet();
     }
 }

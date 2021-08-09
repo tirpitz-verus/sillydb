@@ -3,6 +3,7 @@ package mlesiewski.sillydb.predicate;
 import mlesiewski.sillydb.*;
 
 import java.math.*;
+import java.time.temporal.*;
 import java.util.function.*;
 import java.util.regex.*;
 
@@ -99,6 +100,30 @@ public final class SillyPredicateBuilder {
         @Override
         public <T extends Number & Comparable<T>> SillyPredicateBuilder valueIsLessThanOrEqualTo(T threshold) {
             setCurrent(new NumberLessOrEqualToSillyPredicate(propertyName, threshold));
+            return SillyPredicateBuilder.this;
+        }
+
+        @Override
+        public <T extends Temporal> SillyPredicateBuilder valueIsAfter(T threshold) {
+            setCurrent(new TemporalIsAfterSillyPredicate(propertyName, threshold));
+            return SillyPredicateBuilder.this;
+        }
+
+        @Override
+        public <T extends Temporal> SillyPredicateBuilder valueIsAfterOrEqualTo(T threshold) {
+            setCurrent(new TemporalIsAfterOrEqualSillyPredicate(propertyName, threshold));
+            return SillyPredicateBuilder.this;
+        }
+
+        @Override
+        public <T extends Temporal> SillyPredicateBuilder valueIsBefore(T threshold) {
+            setCurrent(new TemporalIsBeforeSillyPredicate(propertyName, threshold));
+            return SillyPredicateBuilder.this;
+        }
+
+        @Override
+        public <T extends Temporal> SillyPredicateBuilder valueIsBeforeOrEqualTo(T threshold) {
+            setCurrent(new TemporalIsBeforeOrEqualSillyPredicate(propertyName, threshold));
             return SillyPredicateBuilder.this;
         }
 
