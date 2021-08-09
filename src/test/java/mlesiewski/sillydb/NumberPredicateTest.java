@@ -93,8 +93,8 @@ class NumberPredicateTest {
 
         // then
                 .assertError(NumberComparingSillyPredicateUsedToTestNonNumericValue.class)
-                .assertError(errorNamesClass(StringPropertyValue.class))
-                .assertError(errorNamesClass(NumberComparingSillyPredicate.class))
+                .assertError(errorMessageNamesClass(StringPropertyValue.class))
+                .assertError(errorMessageNamesClass(NumberComparingSillyPredicate.class))
                 .cancel();
     }
 
@@ -144,8 +144,8 @@ class NumberPredicateTest {
 
         // then
                 .assertError(NumberComparingSillyPredicateUsedToTestNonNumericValue.class)
-                .assertError(errorNamesClass(StringPropertyValue.class))
-                .assertError(errorNamesClass(NumberComparingSillyPredicate.class))
+                .assertError(errorMessageNamesClass(StringPropertyValue.class))
+                .assertError(errorMessageNamesClass(NumberComparingSillyPredicate.class))
                 .cancel();
     }
 
@@ -195,8 +195,8 @@ class NumberPredicateTest {
 
         // then
                 .assertError(NumberComparingSillyPredicateUsedToTestNonNumericValue.class)
-                .assertError(errorNamesClass(StringPropertyValue.class))
-                .assertError(errorNamesClass(NumberComparingSillyPredicate.class))
+                .assertError(errorMessageNamesClass(StringPropertyValue.class))
+                .assertError(errorMessageNamesClass(NumberComparingSillyPredicate.class))
                 .cancel();
     }
 
@@ -244,8 +244,8 @@ class NumberPredicateTest {
 
         // then
                 .assertError(NumberComparingSillyPredicateUsedToTestNonNumericValue.class)
-                .assertError(errorNamesClass(StringPropertyValue.class))
-                .assertError(errorNamesClass(NumberComparingSillyPredicate.class))
+                .assertError(errorMessageNamesClass(StringPropertyValue.class))
+                .assertError(errorMessageNamesClass(NumberComparingSillyPredicate.class))
                 .cancel();
     }
 
