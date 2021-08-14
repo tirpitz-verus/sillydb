@@ -3,6 +3,7 @@ package mlesiewski.sillydb.core;
 import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.*;
 import mlesiewski.sillydb.*;
+import mlesiewski.sillydb.order.*;
 import mlesiewski.sillydb.predicate.*;
 import mlesiewski.sillydb.propertyvalue.*;
 
@@ -10,8 +11,10 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.util.function.*;
+import java.util.stream.*;
 
 import static io.reactivex.rxjava3.core.BackpressureStrategy.*;
+import static mlesiewski.sillydb.order.SillyOrder.*;
 
 class InMemoryCategory implements Category {
 
@@ -81,7 +84,12 @@ class InMemoryCategory implements Category {
 
     @Override
     public Flowable<NamedThing> findAllBy(SillyPredicate predicate) {
-        return Flowable.create(new FlowableFromThings(predicate), BUFFER);
+        return findAllBy(predicate, NO_ORDER);
+    }
+
+    @Override
+    public Flowable<NamedThing> findAllBy(SillyPredicate predicate, SillyOrder order) {
+        return Flowable.create(new FlowableFromThings(predicate, order), BUFFER);
     }
 
     @Override
@@ -109,23 +117,27 @@ class InMemoryCategory implements Category {
     class FlowableFromThings implements FlowableOnSubscribe<NamedThing> {
 
         private final SillyPredicate predicate;
+        private final SillyOrder order;
 
-        FlowableFromThings(SillyPredicate predicate) {
+        FlowableFromThings(SillyPredicate predicate, SillyOrder order) {
             this.predicate = predicate;
+            this.order = order;
         }
 
         @Override
         public void subscribe(@NonNull FlowableEmitter<NamedThing> emitter) {
-            for (Map.Entry<ThingName, NamedThing> entry : things.entrySet()) {
-                if (emitter.isCancelled()) {
-                    return;
-                }
-                var thing = entry.getValue();
-                var test = predicate.test(thing);
-                if (test) {
-                    emitter.onNext(thing);
-                }
+            var values = things.values()
+                    .stream()
+                    .filter(thing -> {
+                        var result = predicate.test(thing);
+                        return result;
+                    });
+            if (order != NO_ORDER) {
+                values = values.sorted(order);
             }
+            values.forEach(thing -> {
+                emitter.onNext(thing);
+            });
             emitter.onComplete();
         }
     }

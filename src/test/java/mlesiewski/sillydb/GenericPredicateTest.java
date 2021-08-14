@@ -1,6 +1,5 @@
 package mlesiewski.sillydb;
 
-import mlesiewski.sillydb.propertyvalue.*;
 import mlesiewski.sillydb.testinfrastructure.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;

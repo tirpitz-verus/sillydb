@@ -25,4 +25,9 @@ public class StringPropertyValue extends  PropertyValue<String> {
     public static StringPropertyValue stringPropertyValue(@NonNull String value) {
         return new StringPropertyValue(value);
     }
+
+    @Override
+    public int compareTo(PropertyValue<String> o) {
+        return value().compareTo(o.value());
+    }
 }
