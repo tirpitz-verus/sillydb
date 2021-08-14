@@ -1,9 +1,8 @@
 package mlesiewski.sillydb;
 
 import io.reactivex.rxjava3.core.*;
+import mlesiewski.sillydb.order.*;
 import mlesiewski.sillydb.predicate.*;
-
-import java.util.function.*;
 
 /**
  * Categories hold things.
@@ -65,10 +64,19 @@ public interface Category {
     Maybe<NamedThing> findBy(ThingName name);
 
     /**
-     * Finds all things that match the predicate.
+     * Finds all things that match the predicate in no explicit order.
      *
      * @param predicate decides which things will be returned
      * @return things that match the predicate
      */
     Flowable<NamedThing> findAllBy(SillyPredicate predicate);
+
+    /**
+     *  Finds all things that match the predicate in the desired order.
+     *
+     * @param predicate decides which things will be returned
+     * @param order decides which things will be returned first
+     * @return things that match the predicate in the desired order
+     */
+    Flowable<NamedThing> findAllBy(SillyPredicate predicate, SillyOrder order);
 }

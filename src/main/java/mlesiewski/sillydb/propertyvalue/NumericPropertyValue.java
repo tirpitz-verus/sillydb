@@ -23,4 +23,9 @@ public abstract class NumericPropertyValue <T extends Number & Comparable<T>> ex
     public T value() {
         return super.value();
     }
+
+    @Override
+    public int compareTo(PropertyValue<T> o) {
+        return value().compareTo(o.value());
+    }
 }

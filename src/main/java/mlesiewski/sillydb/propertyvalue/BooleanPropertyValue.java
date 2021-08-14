@@ -5,7 +5,7 @@ import mlesiewski.sillydb.*;
 /**
  * Boolean value of the property in a {@link Thing}.
  */
-public class BooleanPropertyValue extends  PropertyValue<Boolean> {
+public class BooleanPropertyValue extends PropertyValue<Boolean> {
 
     /**
      * {@inheritDoc}
@@ -22,5 +22,10 @@ public class BooleanPropertyValue extends  PropertyValue<Boolean> {
      */
     public static BooleanPropertyValue booleanPropertyValue(boolean value) {
         return new BooleanPropertyValue(value);
+    }
+
+    @Override
+    public int compareTo(PropertyValue<Boolean> o) {
+        return value().compareTo(o.value());
     }
 }

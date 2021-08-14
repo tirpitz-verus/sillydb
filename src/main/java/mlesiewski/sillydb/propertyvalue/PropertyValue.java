@@ -12,7 +12,7 @@ import static java.util.Objects.*;
  *
  * @param <T> type of the property value
  */
-public abstract class PropertyValue <T> {
+public abstract class PropertyValue <T> implements Comparable<PropertyValue<T>> {
 
     /**
      * value hold by this object

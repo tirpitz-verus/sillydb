@@ -16,4 +16,9 @@ public class ZonedDateTimePropertyValue extends TemporalPropertyValue<ZonedDateT
     public ZonedDateTimePropertyValue(@NonNull ZonedDateTime value) {
         super(value);
     }
+
+    @Override
+    public int compareTo(PropertyValue<ZonedDateTime> o) {
+        return value().compareTo(o.value());
+    }
 }
