@@ -19,4 +19,4 @@ jobs:
     - name: local merge
       run: git merge --ff-only $GITHUB_HEAD_REF
     - name: build with Gradle
-      run: chmod +x gradlew && ./gradlew build
+      run: chmod +x gradlew && ./gradlew build testSlow
