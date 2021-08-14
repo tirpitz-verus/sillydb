@@ -4,7 +4,7 @@ import mlesiewski.sillydb.*;
 
 public interface GenericBuilder {
 
-    GenericBuilder withCategory(CategoryName shoes);
+    GenericBuilder withCategory(CategoryName categoryName);
 
     PropertyBuilder withThing();
 

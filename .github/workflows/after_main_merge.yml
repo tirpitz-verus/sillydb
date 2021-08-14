@@ -20,7 +20,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build testSlow
 
       - name: upload packages with Gradle
         id: gradle-upload

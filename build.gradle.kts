@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "mlesiewski"
-version =  "0.12.1"
+version = "0.12.1"
 
 java {
     withSourcesJar()
@@ -56,14 +56,22 @@ repositories {
 
 dependencies {
     implementation("org.slf4j", "slf4j-api", "2.0.0-alpha1")
-    implementation("io.reactivex.rxjava3", "rxjava","3.0.7")
+    implementation("io.reactivex.rxjava3", "rxjava", "3.0.7")
 
     testImplementation("org.junit.jupiter", "junit-jupiter", "5.7.0")
     testImplementation("org.assertj", "assertj-core", "3.18.0")
 }
 
 tasks.test {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        excludeTags.add("slow")
+    }
+}
+
+tasks.register<Test>("testSlow") {
+    useJUnitPlatform {
+        includeTags.add("slow")
+    }
 }
 
 tasks.compileJava {
@@ -74,4 +82,9 @@ tasks.compileJava {
 tasks.javadoc {
     (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
     (options as StandardJavadocDocletOptions).addStringOption("Xwerror", "-quiet")
+}
+
+// compile in a different process to save GC in main Gradle demon
+tasks.withType<JavaCompile>().configureEach {
+    options.isFork = true
 }

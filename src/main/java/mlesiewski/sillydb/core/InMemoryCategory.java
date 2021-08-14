@@ -8,6 +8,7 @@ import mlesiewski.sillydb.propertyvalue.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 import java.util.function.*;
 
 import static io.reactivex.rxjava3.core.BackpressureStrategy.*;
@@ -18,7 +19,7 @@ class InMemoryCategory implements Category {
     private final SillyDb db;
     private final Map<ThingName, NamedThing> things;
     private final Map<PropertyName, Class<? extends PropertyValue>> valueTypes;
-    private long thingCounter = 0;
+    private final AtomicLong thingCounter = new AtomicLong();
 
     InMemoryCategory(CategoryName name, SillyDb db) {
         this.name = name;
@@ -55,8 +56,7 @@ class InMemoryCategory implements Category {
     }
 
     private ThingName createThingName() {
-        thingCounter++;
-        return new ThingName(String.valueOf(thingCounter));
+        return new ThingName(String.valueOf(thingCounter.incrementAndGet()));
     }
 
     private void validPropertyTypes(Thing thing) {
