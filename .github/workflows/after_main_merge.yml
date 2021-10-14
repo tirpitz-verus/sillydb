@@ -8,10 +8,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: set up JDK 16
+      - name: set up JDK 17
         uses: AdoptOpenJDK/install-jdk@v1
         with:
-          version: '16'
+          version: '17'
 
       - name: checkout code
         uses: actions/checkout@v2
