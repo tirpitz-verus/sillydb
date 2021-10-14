@@ -10,6 +10,9 @@ java {
     withSourcesJar()
     withJavadocJar()
     modularity.inferModulePath.set(true)
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
 }
 
 publishing {
