@@ -168,9 +168,9 @@ class CategoryCrudTest {
     }
 
     @ParameterizedTest(name = "{0}")
-    @DisplayName("can order results by one field in ascending order")
+    @DisplayName("can order results by one property in ascending order")
     @ArgumentsSource(AllDbTypes.class)
-    void orderByOneFieldAsc(SillyDb sillyDb) {
+    void orderByOnePropertyAsc(SillyDb sillyDb) {
         // given - two things
         var ordinal = propertyName("ordinal");
         var category = using(sillyDb)
@@ -186,7 +186,7 @@ class CategoryCrudTest {
                 .property(ordinal)
                 .exists()
                 .build();
-        var ordering = orderBy().property(ordinal).asc();
+        var ordering = orderBy().property(ordinal).asc().build();
         category.findAllBy(predicate, ordering)
 
         // then
@@ -198,9 +198,9 @@ class CategoryCrudTest {
     }
 
     @ParameterizedTest(name = "{0}")
-    @DisplayName("can order results by one field in descending order")
+    @DisplayName("can order results by one property in descending order")
     @ArgumentsSource(AllDbTypes.class)
-    void orderByOneFieldDesc(SillyDb sillyDb) {
+    void orderByOnePropertyDesc(SillyDb sillyDb) {
         // given - two things
         var ordinal = propertyName("ordinal");
         var category = using(sillyDb)
@@ -216,13 +216,58 @@ class CategoryCrudTest {
                 .property(ordinal)
                 .exists()
                 .build();
-        var ordering = orderBy().property(ordinal).desc();
+        var ordering = orderBy().property(ordinal).desc().build();
         category.findAllBy(predicate, ordering)
 
         // then
                 .test()
                 .assertValueAt(0, t -> propertyHasValue(t, ordinal, 2L))
                 .assertValueAt(1, t -> propertyHasValue(t, ordinal, 1L))
+                .assertComplete()
+                .cancel();
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("can order results by more than one property one field")
+    @ArgumentsSource(AllDbTypes.class)
+    void orderByMoreThanOnePropertyAsc(SillyDb sillyDb) {
+        // given - two things
+        var age = propertyName("age");
+        var name = propertyName("name");
+        var ordinal = propertyName("ordinal");
+        var category = using(sillyDb)
+                .withCategory(CATEGORY_NAME)
+                .withThing()
+                    .withProperty(name, "Pinky")
+                    .withProperty(age, 8)
+                    .withProperty(ordinal, 3L)
+                .withThing()
+                    .withProperty(name, "Pinky")
+                    .withProperty(age, 5)
+                    .withProperty(ordinal, 2L)
+                .withThing()
+                    .withProperty(name, "Adam")
+                    .withProperty(age, 5)
+                    .withProperty(ordinal, 1L)
+                .getCategory();
+
+        // when - ordering results
+        var predicate = predicateWhere()
+                .property(age)
+                .exists()
+                .build();
+        var ordering = orderBy()
+                .property(name).asc()
+                .and()
+                .property(age).asc()
+                .build();
+        category.findAllBy(predicate, ordering)
+
+        // then
+                .test()
+                .assertValueAt(0, t -> propertyHasValue(t, ordinal, 1L))
+                .assertValueAt(1, t -> propertyHasValue(t, ordinal, 2L))
+                .assertValueAt(2, t -> propertyHasValue(t, ordinal, 3L))
                 .assertComplete()
                 .cancel();
     }

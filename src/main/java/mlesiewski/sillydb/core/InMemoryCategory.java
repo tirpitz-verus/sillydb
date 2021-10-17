@@ -1,20 +1,19 @@
 package mlesiewski.sillydb.core;
 
-import io.reactivex.rxjava3.annotations.*;
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
 import mlesiewski.sillydb.*;
-import mlesiewski.sillydb.order.*;
-import mlesiewski.sillydb.predicate.*;
-import mlesiewski.sillydb.propertyvalue.*;
+import mlesiewski.sillydb.order.SillyOrder;
+import mlesiewski.sillydb.predicate.SillyPredicate;
+import mlesiewski.sillydb.propertyvalue.PropertyValue;
 
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-import java.util.function.*;
-import java.util.stream.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
-import static io.reactivex.rxjava3.core.BackpressureStrategy.*;
-import static mlesiewski.sillydb.order.SillyOrder.*;
+import static io.reactivex.rxjava3.core.BackpressureStrategy.BUFFER;
+import static mlesiewski.sillydb.order.SillyOrderBuilder.NO_ORDER;
 
 class InMemoryCategory implements Category {
 
