@@ -2,6 +2,8 @@ package mlesiewski.sillydb.order;
 
 import mlesiewski.sillydb.*;
 
+import java.util.Optional;
+
 import static mlesiewski.sillydb.order.SillyOrderType.*;
 
 /**
@@ -9,7 +11,13 @@ import static mlesiewski.sillydb.order.SillyOrderType.*;
  */
 public class SillyOrderBuilder {
 
+    /**
+     * No order should be forced on the results.
+     */
+    public static final SillyOrder NO_ORDER = new SinglePropertySillyOrder(null, null);
+
     private PropertyName propertyName;
+    private SillyOrder current;
 
     /**
      * Starts the builder chain
@@ -32,6 +40,30 @@ public class SillyOrderBuilder {
     }
 
     /**
+     * Allows to combine properties.
+     *
+     * @return builder for ordering by a new property
+     */
+    public SillyOrderBuilder and() {
+        return this;
+    }
+
+    void add(SillyOrder order) {
+        current = Optional.ofNullable(current)
+                .map(o -> ((SillyOrder) new CombinedSillyOrder(current, order)))
+                .orElse(order);
+    }
+
+    /**
+     * Builds returns the {@link SillyOrder} based on the provided criteria.
+     *
+     * @return resulting order
+     */
+    public SillyOrder build() {
+        return current;
+    }
+
+    /**
      * Defines the type of the ordering by a single property.
      */
     public class SinglePropertySillyOrderBuilder {
@@ -39,19 +71,21 @@ public class SillyOrderBuilder {
         /**
          * Sets the order type as {@link SillyOrderType#ASCENDING}.
          *
-         * @return new order instance
+         * @return builder instance
          */
-        public SillyOrder desc() {
-            return new SillyOrder(propertyName, DESCENDING);
+        public SillyOrderBuilder asc() {
+            add(new SinglePropertySillyOrder(propertyName, ASCENDING));
+            return SillyOrderBuilder.this;
         }
 
         /**
          * Sets the order type as {@link SillyOrderType#DESCENDING}.
          *
-         * @return new order instance
+         * @return builder instance
          */
-        public SillyOrder asc() {
-            return new SillyOrder(propertyName, ASCENDING);
+        public SillyOrderBuilder desc() {
+            add(new SinglePropertySillyOrder(propertyName, DESCENDING));
+            return SillyOrderBuilder.this;
         }
     }
 }
