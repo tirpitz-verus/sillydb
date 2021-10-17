@@ -18,8 +18,8 @@ a silly db in java for lulz
 * 0.11 - **ZonedDateTime properties (before/after predicates)**
 * 0.12 - **guard against changing value type in a scope of a category**
 * 0.13 - **handle concurrent operations (optional long-running tests to be always executed by CI)**
-* 0.14 - **ordering by one field**
-* 0.15 - ordering by many fields
+* 0.14 - **ordering by one property**
+* 0.15 - ordering by many properties
 * 0.16 - batch put
 * 0.17 - add a method to return whole category (ordered and unordered)
 * 0.18 - handle subscription cancellation in find methods
