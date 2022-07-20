@@ -2,17 +2,23 @@ package mlesiewski.sillydb.core;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
 import mlesiewski.sillydb.*;
 import mlesiewski.sillydb.order.SillyOrder;
 import mlesiewski.sillydb.predicate.SillyPredicate;
 import mlesiewski.sillydb.propertyvalue.PropertyValue;
+import org.reactivestreams.Publisher;
 
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static io.reactivex.rxjava3.core.BackpressureStrategy.BUFFER;
+import static java.util.stream.StreamSupport.stream;
 import static mlesiewski.sillydb.order.SillyOrderBuilder.NO_ORDER;
 import static mlesiewski.sillydb.predicate.SillyPredicateBuilder.NO_PREDICATE;
 
@@ -43,10 +49,23 @@ class InMemoryCategory implements Category {
 
     @Override
     public Single<NamedThing> put(Thing thing) {
+        NamedThing namedThing = putSingleThing(thing);
+        return Single.just(namedThing);
+    }
+
+    @Override
+    public Single<Iterable<NamedThing>> put(Iterable<Thing> things) {
+        Iterable<NamedThing> namedThings = stream(things.spliterator(), false)
+                .map(this::putSingleThing)
+                .toList();
+        return Single.just(namedThings);
+    }
+
+    private NamedThing putSingleThing(Thing thing) {
         validPropertyTypes(thing);
         var namedThing = namedThingFrom(thing);
         things.put(namedThing.name(), namedThing);
-        return Single.just(namedThing);
+        return namedThing;
     }
 
     private NamedThing namedThingFrom(Thing thing) {
@@ -105,6 +124,12 @@ class InMemoryCategory implements Category {
     @Override
     public Completable remove(ThingName name) {
         things.remove(name);
+        return Completable.complete();
+    }
+
+    @Override
+    public Completable remove(Iterable<ThingName> names) {
+        names.forEach(things::remove);
         return Completable.complete();
     }
 

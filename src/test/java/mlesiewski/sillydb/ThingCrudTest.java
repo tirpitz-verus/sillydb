@@ -1,5 +1,9 @@
 package mlesiewski.sillydb;
 
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Flowable;
+import mlesiewski.sillydb.predicate.SillyPredicate;
 import mlesiewski.sillydb.propertyvalue.*;
 import mlesiewski.sillydb.testinfrastructure.*;
 import org.junit.jupiter.api.*;
@@ -11,7 +15,10 @@ import org.junit.jupiter.params.provider.*;
 import java.util.*;
 
 import static mlesiewski.sillydb.PropertyName.*;
+import static mlesiewski.sillydb.predicate.SillyPredicateBuilder.predicateWhere;
+import static mlesiewski.sillydb.propertyvalue.LongPropertyValue.longPropertyValue;
 import static mlesiewski.sillydb.propertyvalue.StringPropertyValue.*;
+import static mlesiewski.sillydb.testinfrastructure.TestPredicates.propertyHasValue;
 import static mlesiewski.sillydb.testinfrastructure.testdatabuilder.TestDataBuilder.*;
 
 @DisplayName("thing")
@@ -50,6 +57,35 @@ class ThingCrudTest {
     }
 
     @ParameterizedTest(name = "{0}")
+    @DisplayName("can by saved with other things at once")
+    @ArgumentsSource(AllDbTypes.class)
+    void canSaveManyThingsAtOnce(SillyDb sillyDb) {
+        // given - a category
+        var sweets = using(sillyDb)
+                .withCategory(CATEGORY_NAME)
+                .getCategory();
+
+        // when - creating new things
+        var ordinal = propertyName("ordinal");
+        var thing1 = sweets.createNewThing().setProperty(ordinal, longPropertyValue(1L)).blockingGet();
+        var thing2 = sweets.createNewThing().setProperty(ordinal, longPropertyValue(2L)).blockingGet();
+        var thing3 = sweets.createNewThing().setProperty(ordinal, longPropertyValue(3L)).blockingGet();
+        Iterable<Thing> things = Arrays.asList(thing1, thing2, thing3);
+
+        // when - saving new thing
+        var saveResult = sweets.put(things);
+
+        // then - save made no error
+        saveResult.test()
+                .assertNoErrors()
+                .dispose();
+
+        saveResult.test()
+                .assertValue(Objects::nonNull)
+                .dispose();
+    }
+
+    @ParameterizedTest(name = "{0}")
     @DisplayName("can be found by name")
     @ArgumentsSource(AllDbTypes.class)
     void thingCanBeFoundByName(SillyDb sillyDb) {
@@ -65,7 +101,7 @@ class ThingCrudTest {
         // when - searching for a marshmallow
         sweets.findBy(marshmallowName).test()
 
-                // then - search succeeds
+        // then - search succeeds
                 .assertValue(v -> v.name().equals(marshmallowName))
                 .assertComplete()
                 .dispose();
@@ -88,7 +124,7 @@ class ThingCrudTest {
         // when - searching for a marshmallow
         sweets.findBy(marshmallowName).test()
 
-                // then - search succeeds
+        // then - search succeeds
                 .assertValue(v -> v.name().equals(marshmallowName))
                 .assertValue(v -> {
                     v.getProperty(TASTE)
@@ -185,6 +221,48 @@ class ThingCrudTest {
                 .assertComplete()
                 .assertNoValues()
                 .dispose();
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("can be removed with other things at the same time")
+    @ArgumentsSource(AllDbTypes.class)
+    void manyThingsCanBeRemoved(SillyDb sillyDb) {
+        // given - a category and things
+        var ordinal = propertyName("ordinal");
+        var category = using(sillyDb)
+                .withCategory(CATEGORY_NAME)
+                .withThing().withProperty(ordinal, 1L)
+                .withThing().withProperty(ordinal, 2L)
+                .withThing().withProperty(ordinal, 3L)
+                .getCategory();
+
+        var lessThanThree = predicateWhere().property(ordinal).valueIsLessThan(3L).build();
+
+        var namesToRemove = category.findAllBy(lessThanThree)
+                .map(NamedThing::name)
+                .blockingStream()
+                .toList();
+
+        // when
+        Completable remove = category.remove(namesToRemove);
+
+        var searchRemoved = category.findAllBy(lessThanThree);
+        var searchStaying = category.findAllBy(lessThanThree.not());
+
+        // then
+        remove.test()
+                .assertNoErrors()
+                .assertComplete()
+                .dispose();
+        searchRemoved.test()
+                .assertValueCount(0)
+                .assertNoErrors()
+                .assertComplete()
+                .cancel();
+        searchStaying.test()
+                .assertValueCount(1)
+                .assertValue(t -> propertyHasValue(t, ordinal, 3L))
+                .cancel();
     }
 
     @ParameterizedTest(name = "{0}")
