@@ -58,11 +58,11 @@ repositories {
 }
 
 dependencies {
-    implementation("org.slf4j", "slf4j-api", "2.0.0-alpha1")
-    implementation("io.reactivex.rxjava3", "rxjava", "3.0.7")
+    implementation("org.slf4j", "slf4j-api", "2.0.0-alpha7")
+    implementation("io.reactivex.rxjava3", "rxjava", "3.1.5")
 
-    testImplementation("org.junit.jupiter", "junit-jupiter", "5.7.0")
-    testImplementation("org.assertj", "assertj-core", "3.18.0")
+    testImplementation("org.junit.jupiter", "junit-jupiter", "5.9.0-RC1")
+    testImplementation("org.assertj", "assertj-core", "3.23.1")
 }
 
 tasks.test {
