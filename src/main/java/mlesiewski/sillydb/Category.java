@@ -1,8 +1,8 @@
 package mlesiewski.sillydb;
 
 import io.reactivex.rxjava3.core.*;
-import mlesiewski.sillydb.order.*;
-import mlesiewski.sillydb.predicate.*;
+import mlesiewski.sillydb.order.SillyOrder;
+import mlesiewski.sillydb.predicate.SillyPredicate;
 
 /**
  * Categories hold things.
@@ -37,6 +37,16 @@ public interface Category {
     Single<NamedThing> put(Thing thing);
 
     /**
+     * Puts many {@link Thing} instances in the category.
+     * If a thing wasn't a {@link NamedThing} than a new named thing will be created, stored and returned.
+     * Will overwrite existing things if names match.
+     *
+     * @param things things to put to this category
+     * @return named things if they were supplied or new named things created from the things supplied
+     */
+    Single<Iterable<NamedThing>> put(Iterable<Thing> things);
+
+    /**
      * Removes a thing with the name specified from the category.
      * If there is no thing with that name than it will not cause an error.
      *
@@ -44,6 +54,15 @@ public interface Category {
      * @return result of the operation
      */
     Completable remove(ThingName name);
+
+    /**
+     * Removes things with the names specified from the category.
+     * If there is no thing with a name than it will not cause an error.
+     *
+     * @param names collection of names of thing to remove
+     * @return result of the operation
+     */
+    Completable remove(Iterable<ThingName> names);
 
     /**
      * Calls {@link Category#remove(ThingName)}.
