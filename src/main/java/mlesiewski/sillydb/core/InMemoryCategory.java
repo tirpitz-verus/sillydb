@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import static io.reactivex.rxjava3.core.BackpressureStrategy.BUFFER;
 import static mlesiewski.sillydb.order.SillyOrderBuilder.NO_ORDER;
+import static mlesiewski.sillydb.predicate.SillyPredicateBuilder.NO_PREDICATE;
 
 class InMemoryCategory implements Category {
 
@@ -92,6 +93,16 @@ class InMemoryCategory implements Category {
     }
 
     @Override
+    public Flowable<NamedThing> findAll() {
+        return Flowable.create(new FlowableFromThings(NO_PREDICATE, NO_ORDER), BUFFER);
+    }
+
+    @Override
+    public Flowable<NamedThing> findAll(SillyOrder order) {
+        return Flowable.create(new FlowableFromThings(NO_PREDICATE, order), BUFFER);
+    }
+
+    @Override
     public Completable remove(ThingName name) {
         things.remove(name);
         return Completable.complete();
@@ -125,12 +136,13 @@ class InMemoryCategory implements Category {
 
         @Override
         public void subscribe(@NonNull FlowableEmitter<NamedThing> emitter) {
-            var values = things.values()
-                    .stream()
-                    .filter(thing -> {
-                        var result = predicate.test(thing);
-                        return result;
-                    });
+            var values = things.values().stream();
+            if (predicate != NO_PREDICATE) {
+                values = values.filter(thing -> {
+                    var result = predicate.test(thing);
+                    return result;
+                });
+            }
             if (order != NO_ORDER) {
                 values = values.sorted(order);
             }

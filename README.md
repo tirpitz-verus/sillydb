@@ -20,7 +20,7 @@ a silly db in java for lulz
 * 0.13 - **handle concurrent operations (optional long-running tests to be always executed by CI)**
 * 0.14 - **ordering by one property**
 * 0.15 - **ordering by many properties**
-* 0.16 - add a method to return whole category (ordered and unordered)
+* 0.16 - **add a method to return whole category (ordered and unordered)**
 * 0.17 - batch put
 * 0.18 - handle subscription cancellation in find methods
 * 0.19 - handle backpressure in find methods

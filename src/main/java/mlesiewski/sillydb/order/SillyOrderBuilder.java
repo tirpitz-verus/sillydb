@@ -14,7 +14,7 @@ public class SillyOrderBuilder {
     /**
      * No order should be forced on the results.
      */
-    public static final SillyOrder NO_ORDER = new SinglePropertySillyOrder(null, null);
+    public static final SillyOrder NO_ORDER = new NoSillyOrder();
 
     private PropertyName propertyName;
     private SillyOrder current;
@@ -39,28 +39,10 @@ public class SillyOrderBuilder {
         return new SinglePropertySillyOrderBuilder();
     }
 
-    /**
-     * Allows to combine properties.
-     *
-     * @return builder for ordering by a new property
-     */
-    public SillyOrderBuilder and() {
-        return this;
-    }
-
     void add(SillyOrder order) {
         current = Optional.ofNullable(current)
                 .map(o -> ((SillyOrder) new CombinedSillyOrder(current, order)))
                 .orElse(order);
-    }
-
-    /**
-     * Builds returns the {@link SillyOrder} based on the provided criteria.
-     *
-     * @return resulting order
-     */
-    public SillyOrder build() {
-        return current;
     }
 
     /**
@@ -73,9 +55,9 @@ public class SillyOrderBuilder {
          *
          * @return builder instance
          */
-        public SillyOrderBuilder asc() {
+        public SillyOrderBuilderFinished asc() {
             add(new SinglePropertySillyOrder(propertyName, ASCENDING));
-            return SillyOrderBuilder.this;
+            return new SillyOrderBuilderFinished();
         }
 
         /**
@@ -83,9 +65,33 @@ public class SillyOrderBuilder {
          *
          * @return builder instance
          */
-        public SillyOrderBuilder desc() {
+        public SillyOrderBuilderFinished desc() {
             add(new SinglePropertySillyOrder(propertyName, DESCENDING));
+            return new SillyOrderBuilderFinished();
+        }
+    }
+
+    /**
+     * Returned after an order for a property was defined.
+     */
+    public class SillyOrderBuilderFinished {
+
+        /**
+         * Allows to combine properties.
+         *
+         * @return builder for ordering by a new property
+         */
+        public SillyOrderBuilder and() {
             return SillyOrderBuilder.this;
+        }
+
+        /**
+         * Builds returns the {@link SillyOrder} based on the provided criteria.
+         *
+         * @return resulting order
+         */
+        public SillyOrder build() {
+            return current;
         }
     }
 }
