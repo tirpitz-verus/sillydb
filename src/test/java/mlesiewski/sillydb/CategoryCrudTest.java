@@ -271,4 +271,63 @@ class CategoryCrudTest {
                 .assertComplete()
                 .cancel();
     }
+
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("returns all category things in natural order")
+    @ArgumentsSource(AllDbTypes.class)
+    void returnsAlCategoryThingsInNaturalOrder(SillyDb sillyDb) {
+        // given
+        var ordinal = propertyName("ordinal");
+        var category = using(sillyDb)
+                .withCategory(CATEGORY_NAME)
+                .withThing()
+                .withProperty(ordinal, 3L)
+                .withThing()
+                .withProperty(ordinal, 2L)
+                .withThing()
+                .withProperty(ordinal, 1L)
+                .getCategory();
+
+        // when
+        category.findAll()
+
+        // then
+                .test()
+                .assertValueAt(0, t -> propertyHasValue(t, ordinal, 3L))
+                .assertValueAt(1, t -> propertyHasValue(t, ordinal, 2L))
+                .assertValueAt(2, t -> propertyHasValue(t, ordinal, 1L))
+                .assertComplete()
+                .cancel();
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("returns all category things in specified order")
+    @ArgumentsSource(AllDbTypes.class)
+    void returnsAlCategoryThingsInSpecifiedOrder(SillyDb sillyDb) {
+        // given
+        var ordinal = propertyName("ordinal");
+        var category = using(sillyDb)
+                .withCategory(CATEGORY_NAME)
+                .withThing()
+                .withProperty(ordinal, 3L)
+                .withThing()
+                .withProperty(ordinal, 2L)
+                .withThing()
+                .withProperty(ordinal, 1L)
+                .getCategory();
+
+        // when
+        var ordering = orderBy()
+                .property(ordinal).asc()
+                .build();
+        category.findAll(ordering)
+
+        // then
+                .test()
+                .assertValueAt(0, t -> propertyHasValue(t, ordinal, 1L))
+                .assertValueAt(1, t -> propertyHasValue(t, ordinal, 2L))
+                .assertValueAt(2, t -> propertyHasValue(t, ordinal, 3L))
+                .assertComplete()
+                .cancel();
+    }
 }

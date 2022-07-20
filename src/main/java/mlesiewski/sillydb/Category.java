@@ -79,4 +79,19 @@ public interface Category {
      * @return things that match the predicate in the desired order
      */
     Flowable<NamedThing> findAllBy(SillyPredicate predicate, SillyOrder order);
+
+    /**
+     * Finds all things in this category and returns them in the natural order.
+     *
+     * @return all things in the natural order
+     */
+    Flowable<NamedThing> findAll();
+
+    /**
+     * Finds all things in this category and returns them in the desired order.
+     *
+     * @param order decides which things will be returned first
+     * @return all things in the desired order
+     */
+    Flowable<NamedThing> findAll(SillyOrder order);
 }

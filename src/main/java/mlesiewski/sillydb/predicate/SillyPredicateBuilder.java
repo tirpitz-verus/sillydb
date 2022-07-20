@@ -23,6 +23,11 @@ import java.util.regex.*;
  */
 public final class SillyPredicateBuilder {
 
+    /**
+     * Indicates that no predicate should be used.
+     */
+    public static final SillyPredicate NO_PREDICATE = new NoSillyPredicate();
+
     SillyPredicate currentPredicate;
     Function<PropertyName, PropertySillyPredicateBuilder> nextPredicateBuilder = SinglePredicateBuilder::new;
 
