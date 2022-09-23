@@ -2,20 +2,15 @@ package mlesiewski.sillydb.core;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.*;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.disposables.Disposable;
 import mlesiewski.sillydb.*;
 import mlesiewski.sillydb.order.SillyOrder;
 import mlesiewski.sillydb.predicate.SillyPredicate;
 import mlesiewski.sillydb.propertyvalue.PropertyValue;
-import org.reactivestreams.Publisher;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static io.reactivex.rxjava3.core.BackpressureStrategy.BUFFER;
 import static java.util.stream.StreamSupport.stream;
@@ -163,17 +158,12 @@ class InMemoryCategory implements Category {
         public void subscribe(@NonNull FlowableEmitter<NamedThing> emitter) {
             var values = things.values().stream();
             if (predicate != NO_PREDICATE) {
-                values = values.filter(thing -> {
-                    var result = predicate.test(thing);
-                    return result;
-                });
+                values = values.filter(predicate::test);
             }
             if (order != NO_ORDER) {
                 values = values.sorted(order);
             }
-            values.forEach(thing -> {
-                emitter.onNext(thing);
-            });
+            values.forEach(emitter::onNext);
             emitter.onComplete();
         }
     }

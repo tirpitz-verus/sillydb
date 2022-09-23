@@ -7,6 +7,8 @@ import org.junit.jupiter.api.MethodOrderer.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
 import org.junit.jupiter.params.provider.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import java.util.*;
 
@@ -329,5 +331,116 @@ class CategoryCrudTest {
                 .assertValueAt(2, t -> propertyHasValue(t, ordinal, 3L))
                 .assertComplete()
                 .cancel();
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("handles subscription cancellation")
+    @ArgumentsSource(AllDbTypes.class)
+    void handlesSubscriptionCancellation(SillyDb sillyDb) {
+        // given
+        var category = using(sillyDb)
+                .withCategory(CATEGORY_NAME)
+                .withThing()
+                .withThing()
+                .getCategory();
+        var subscriber = new CancellationTestingSubscriber();
+
+        // when
+        category.findAll().subscribe(subscriber);
+
+        // then
+        assertThat(subscriber.oneThingReceived).isTrue();
+        assertThat(subscriber.noThingsReceivedAfterCancellation).isTrue();
+        assertThat(subscriber.noErrors).isTrue();
+        assertThat(subscriber.notCompleted).isTrue();
+    }
+
+    private static class CancellationTestingSubscriber implements Subscriber<NamedThing> {
+
+        boolean notCompleted = true;
+        boolean noErrors = true;
+        boolean noThingsReceivedAfterCancellation = true;
+        boolean oneThingReceived = false;
+        Subscription subscription;
+
+        @Override
+        public void onSubscribe(Subscription s) {
+            subscription = s;
+            subscription.request(2);
+        }
+
+        @Override
+        public void onNext(NamedThing namedThing) {
+            if (!oneThingReceived) {
+                subscription.cancel();
+                oneThingReceived = true;
+            } else {
+                noThingsReceivedAfterCancellation = false;
+            }
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            noErrors = false;
+        }
+
+        @Override
+        public void onComplete() {
+            notCompleted = false;
+        }
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @DisplayName("handles backpressure")
+    @ArgumentsSource(AllDbTypes.class)
+    void handlesBackpressure(SillyDb sillyDb) {
+        // given
+        var category = using(sillyDb)
+                .withCategory(CATEGORY_NAME)
+                .withThing()
+                .withThing()
+                .withThing()
+                .getCategory();
+        var subscriber = new BackpressureTestingSubscriber();
+
+        // when
+        category.findAll().subscribe(subscriber);
+
+        // then
+        assertThat(subscriber.thingReceived).isEqualTo(2);
+        assertThat(subscriber.noErrors).isTrue();
+        assertThat(subscriber.notCompleted).isTrue();
+    }
+
+    private static class BackpressureTestingSubscriber implements Subscriber<NamedThing> {
+
+        boolean notCompleted = true;
+        boolean noErrors = true;
+        int thingReceived = 0;
+        Subscription subscription;
+
+        @Override
+        public void onSubscribe(Subscription s) {
+            subscription = s;
+            subscription.request(1);
+        }
+
+        @Override
+        public void onNext(NamedThing namedThing) {
+            thingReceived++;
+            if (thingReceived == 1) {
+                subscription.request(1);
+            }
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            noErrors = false;
+        }
+
+        @Override
+        public void onComplete() {
+            notCompleted = false;
+        }
     }
 }
