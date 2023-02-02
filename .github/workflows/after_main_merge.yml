@@ -14,7 +14,7 @@ jobs:
           version: '17'
 
       - name: checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: grant execute permission for gradlew
         run: chmod +x gradlew
@@ -27,11 +27,12 @@ jobs:
         run: ./gradlew publish
         continue-on-error: true
         env:
-         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: remove the oldest version
         if: steps.gradle-upload.outcome == 'success'
-        uses: actions/delete-package-versions@v1
+        uses: actions/delete-package-versions@v4
         with:
           package-name: mlesiewski.sillydb
           token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
