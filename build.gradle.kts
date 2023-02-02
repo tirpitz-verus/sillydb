@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "mlesiewski"
-version = "0.17.0"
+version = "1.0.0"
 
 java {
     withSourcesJar()

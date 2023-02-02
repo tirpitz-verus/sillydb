@@ -24,7 +24,7 @@ a silly db in java for lulz
 * 0.17 - **batch put**
 * 0.18 - **handle subscription cancellation in find methods**
 * 0.19 - **handle backpressure in find methods**
-* 1.0 - InMemory release
+* 1.0 - **InMemory release**
 * 1.1 - directory parameter (also in builder, check if dir in use by other instance, create it if needs be, write version and validate it)
 * 1.2 - information schema (structure_info)
 * 1.3 - logs for every flow (test slf4j properties)
