@@ -9,9 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: set up JDK 20
-        uses: AdoptOpenJDK/install-jdk@v1
+        uses: oracle-actions/setup-java@v1
         with:
-          version: '20'
+          website: jdk.java.net
+          release: 20
 
       - name: checkout code
         uses: actions/checkout@v3
