@@ -12,6 +12,7 @@ import org.reactivestreams.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
+import java.util.stream.IntStream;
 
 import static java.lang.Boolean.*;
 import static mlesiewski.sillydb.CategoryName.*;
@@ -27,7 +28,7 @@ class CategoryConcurrentAccessTest {
 
     static final int TASKS_COUNT = 100_000;
     static final int PARALLELISM = 4;
-    static final boolean DEBUG = false;
+    static final boolean DEBUG = true;
     static final int TASK_WAIT_A_BIT_MILLIS = 0;
 
     @ArgumentsSource(AllDbTypes.class)
@@ -39,11 +40,9 @@ class CategoryConcurrentAccessTest {
                 .getCategory();
         var executor = Executors.newFixedThreadPool(PARALLELISM);
         var scheduler = Schedulers.from(executor);
-        var listOfSubscribers = new ArrayList<TestSubscriber>(PARALLELISM);
-        for (int i = 0; i < PARALLELISM; i++) {
-            listOfSubscribers.add(new TestSubscriber(birds));
-        }
-        var arrayOfSubscribes = listOfSubscribers.toArray(new TestSubscriber[PARALLELISM]);
+        var arrayOfSubscribes = IntStream.range(0, PARALLELISM)
+                .mapToObj(i -> new TestSubscriber(birds))
+                .toArray(TestSubscriber[]::new);
 
         // when
         var thread = new Thread(() -> Flowable.range(1, TASKS_COUNT)
@@ -60,19 +59,19 @@ class CategoryConcurrentAccessTest {
             fail("the test did not finish in time");
         }
 
-        printStats(listOfSubscribers);
+        printStats(arrayOfSubscribes);
 
         // then - all tasks completed
-        var completed = listOfSubscribers.stream()
+        var completed = Arrays.stream(arrayOfSubscribes)
                 .mapToInt(TestSubscriber::getCompletedCount)
                 .sum();
         assertEquals(TASKS_COUNT, completed);
     }
 
-    private void printStats(ArrayList<TestSubscriber> listOfSubscribers) {
+    private void printStats(TestSubscriber[] arrayOfSubscribers) {
         if (DEBUG) {
-            System.out.println("");
-            listOfSubscribers.stream()
+            System.out.println();
+            Arrays.stream(arrayOfSubscribers)
                     .map(TestSubscriber::getStats)
                     .peek(System.out::println)
                     .reduce(Stats::add)
