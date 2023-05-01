@@ -8,7 +8,10 @@ import mlesiewski.sillydb.*;
 public class BooleanPropertyValue extends PropertyValue<Boolean> {
 
     /**
-     * {@inheritDoc}
+     * Creates new objects.
+     *
+     * @see PropertyValue#PropertyValue(Object)
+     * @param value to be wrapped
      */
     public BooleanPropertyValue(boolean value) {
         super(value);

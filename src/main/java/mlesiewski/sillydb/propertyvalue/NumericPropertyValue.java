@@ -10,7 +10,9 @@ import io.reactivex.rxjava3.annotations.*;
 public abstract class NumericPropertyValue <T extends Number & Comparable<T>> extends PropertyValue<T> {
 
     /**
-     * {@inheritDoc}
+     * Creates new objects.
+     *
+     * @param value to be wrapped
      */
     protected NumericPropertyValue(@NonNull T value) {
         super(value);

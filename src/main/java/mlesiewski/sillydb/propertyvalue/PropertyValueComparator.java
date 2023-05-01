@@ -8,6 +8,12 @@ import java.util.*;
  */
 public class PropertyValueComparator implements Comparator<PropertyValue<?>> {
 
+    /**
+     * Creates a new instance.
+     */
+    public PropertyValueComparator() {
+    }
+
     @Override
     public int compare(PropertyValue<?> propertyValue1, PropertyValue<?> propertyValue2) {
         if (propertyValue1 == null) {

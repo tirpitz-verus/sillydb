@@ -5,6 +5,12 @@ package mlesiewski.sillydb.core;
  */
 public class FileSillyDb extends InMemorySillyDb {
 
+    /**
+     * Creates new database that will be backed by a file.
+     */
+    public FileSillyDb() {
+    }
+
     @Override
     public String toString() {
         return "FileSillyDb{}";

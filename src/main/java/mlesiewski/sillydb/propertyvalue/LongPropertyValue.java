@@ -9,7 +9,10 @@ import mlesiewski.sillydb.*;
 public class LongPropertyValue extends NumericPropertyValue<Long> {
 
     /**
-     * {@inheritDoc}
+     * Creates new {@link LongPropertyValue} objects.
+     *
+     * @see NumericPropertyValue#NumericPropertyValue(Number) 
+     * @param value to be wrapped
      */
     public LongPropertyValue(@NonNull Long value) {
         super(value);

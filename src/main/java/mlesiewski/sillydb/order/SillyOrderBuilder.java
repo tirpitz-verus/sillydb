@@ -20,6 +20,12 @@ public class SillyOrderBuilder {
     private SillyOrder current;
 
     /**
+     * Creates a new instance.
+     */
+    public SillyOrderBuilder() {
+    }
+
+    /**
      * Starts the builder chain
      *
      * @return next step in the builder call chain
@@ -51,6 +57,12 @@ public class SillyOrderBuilder {
     public class SinglePropertySillyOrderBuilder {
 
         /**
+         * Creates a new instance.
+         */
+        public SinglePropertySillyOrderBuilder() {
+        }
+
+        /**
          * Sets the order type as {@link SillyOrderType#ASCENDING}.
          *
          * @return builder instance
@@ -75,6 +87,12 @@ public class SillyOrderBuilder {
      * Returned after an order for a property was defined.
      */
     public class SillyOrderBuilderFinished {
+
+        /**
+         * Creates a new instance.
+         */
+        public SillyOrderBuilderFinished() {
+        }
 
         /**
          * Allows to combine properties.

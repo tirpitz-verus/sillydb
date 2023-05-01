@@ -4,6 +4,7 @@ import io.reactivex.rxjava3.annotations.*;
 import mlesiewski.sillydb.*;
 
 import java.time.*;
+import java.time.temporal.Temporal;
 
 /**
  * ZonedDateTime value of the property in a {@link Thing}.
@@ -11,7 +12,10 @@ import java.time.*;
 public class ZonedDateTimePropertyValue extends TemporalPropertyValue<ZonedDateTime> {
 
     /**
-     * {@inheritDoc}
+     * Creates new objects.
+     *
+     * @see TemporalPropertyValue#TemporalPropertyValue(Temporal)
+     * @param value to be wrapped
      */
     public ZonedDateTimePropertyValue(@NonNull ZonedDateTime value) {
         super(value);

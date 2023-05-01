@@ -6,10 +6,13 @@ import mlesiewski.sillydb.*;
 /**
  * String value of the property in a {@link Thing}.
  */
-public class StringPropertyValue extends  PropertyValue<String> {
+public class StringPropertyValue extends PropertyValue<String> {
 
     /**
-     * {@inheritDoc}
+     * Creates new objects.
+     *
+     * @see PropertyValue#PropertyValue(Object)
+     * @param value to be wrapped
      */
     public StringPropertyValue(@NonNull String value) {
         super(value);

@@ -32,6 +32,12 @@ public final class SillyPredicateBuilder {
     Function<PropertyName, PropertySillyPredicateBuilder> nextPredicateBuilder = SinglePredicateBuilder::new;
 
     /**
+     * Creates a new instance.
+     */
+    public SillyPredicateBuilder() {
+    }
+
+    /**
      * A convenience method to start the builder call chain. Can be statically imported.
      *
      * @return next part of the call chain

@@ -11,7 +11,10 @@ import java.math.*;
 public class BigDecimalPropertyValue extends  NumericPropertyValue<BigDecimal> {
 
     /**
-     * {@inheritDoc}
+     * Creates new objects.
+     *
+     * @see NumericPropertyValue#NumericPropertyValue(Number)
+     * @param value to be wrapped
      */
     public BigDecimalPropertyValue(@NonNull BigDecimal value) {
         super(value);

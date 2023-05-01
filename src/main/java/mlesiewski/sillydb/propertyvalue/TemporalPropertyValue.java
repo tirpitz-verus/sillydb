@@ -12,7 +12,10 @@ import java.time.temporal.*;
 public abstract class TemporalPropertyValue<T extends Temporal> extends PropertyValue<T> {
 
     /**
-     * {@inheritDoc}
+     * Creates new objects.
+     *
+     * @see PropertyValue#PropertyValue(Object)
+     * @param value to be wrapped
      */
     protected TemporalPropertyValue(@NonNull T value) {
         super(value);
