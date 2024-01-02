@@ -30,7 +30,7 @@ public class SillyDbBuilder implements OfType {
     }
 
     @Override
-    public Final inAFile() {
+    public WithRunDirectory inAFile() {
         return new FileSillyDbBuilder();
     }
 }

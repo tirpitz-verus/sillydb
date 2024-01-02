@@ -4,14 +4,14 @@ plugins {
 }
 
 group = "mlesiewski"
-version = "1.0.0"
+version = "1.1.0"
 
 java {
     withSourcesJar()
     withJavadocJar()
     modularity.inferModulePath.set(true)
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(20))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
@@ -58,10 +58,10 @@ repositories {
 }
 
 dependencies {
-    implementation("org.slf4j", "slf4j-api", "2.0.7")
-    implementation("io.reactivex.rxjava3", "rxjava", "3.1.6")
+    implementation("org.slf4j", "slf4j-api", "2.0.9")
+    implementation("io.reactivex.rxjava3", "rxjava", "3.1.8")
 
-    testImplementation("org.junit.jupiter", "junit-jupiter", "5.9.3")
+    testImplementation("org.junit.jupiter", "junit-jupiter", "5.10.0")
     testImplementation("org.assertj", "assertj-core", "3.24.2")
 }
 
@@ -80,6 +80,7 @@ tasks.register<Test>("testSlow") {
 tasks.compileJava {
     // use the project's version or define one directly
     options.javaModuleVersion.set(provider { project.version as String })
+    options.compilerArgs.add("-Aproject=${project.group}/${project.name}")
 }
 
 tasks.javadoc {

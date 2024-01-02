@@ -17,5 +17,5 @@ public interface OfType {
      *
      * @return next part of the {@link SillyDbBuilder} call chain
      */
-    Final inAFile();
+    WithRunDirectory inAFile();
 }

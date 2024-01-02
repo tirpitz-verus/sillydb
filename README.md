@@ -25,12 +25,11 @@ a silly db in java for lulz
 * 0.18 - **handle subscription cancellation in find methods**
 * 0.19 - **handle backpressure in find methods**
 * 1.0 - **InMemory release**
-* 1.1 - directory parameter (also in builder, check if dir in use by other instance, create it if needs be, write version and validate it)
+* 1.1 - **directory parameter (check if dir in use by other instance, write version and validate it)**
 * 1.2 - information schema (structure_info)
 * 1.3 - logs for every flow (test slf4j properties)
-* 1.4 - save to file
-* 1.5 - load from file
-* 1.6 - handle concurrent file operations
+* 1.4 - save to file on demand
+* 1.5 - load from file on demand
 * 2.0 - File save/load release
 * 2.1 - test r/w speeds (both by timing each operation and by having perf tests - run optionally)
 * 2.2 - create and remove files for all category operations
