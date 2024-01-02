@@ -9,6 +9,8 @@ public class FileSillyDb extends InMemorySillyDb {
 
     /**
      * Creates new database that will be backed by a file.
+     *
+     * @param runDirectory directory that db will store its files in
      */
     public FileSillyDb(FileSillyRunDirectory runDirectory) {
         this.runDirectory = assertWritable(runDirectory);
