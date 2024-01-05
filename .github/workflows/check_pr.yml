@@ -8,11 +8,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: set up JDK 20
+      - name: set up JDK 21
         uses: oracle-actions/setup-java@v1
         with:
           website: jdk.java.net
-          release: 20
+          release: 21
       - name: checkout code
         uses: actions/checkout@v4
         with:

@@ -8,28 +8,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: set up JDK 20
+      - name: set up JDK 21
         uses: oracle-actions/setup-java@v1
         with:
           website: jdk.java.net
-          release: 20
-
+          release: 21
       - name: checkout code
         uses: actions/checkout@v4
-
       - name: grant execute permission for gradlew
         run: chmod +x gradlew
-
       - name: build with Gradle
         run: ./gradlew build testSlow
-
       - name: upload packages with Gradle
         id: gradle-upload
         run: ./gradlew publish
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: remove the oldest version
         if: steps.gradle-upload.outcome == 'success'
         uses: actions/delete-package-versions@v4

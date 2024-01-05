@@ -11,7 +11,7 @@ java {
     withJavadocJar()
     modularity.inferModulePath.set(true)
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(20))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
