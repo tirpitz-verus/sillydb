@@ -27,7 +27,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: remove the oldest version
         if: steps.gradle-upload.outcome == 'success'
-        uses: actions/delete-package-versions@v4
+        uses: actions/delete-package-versions@v5
         with:
           package-name: mlesiewski.sillydb
           token: ${{ secrets.GITHUB_TOKEN }}
